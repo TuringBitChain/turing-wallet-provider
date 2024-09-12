@@ -1,0 +1,33 @@
+{
+  "name": "turing-wallet-provider",
+  "version": "1.0.1",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc"
+  },
+  "peerDependencies": {
+    "react": ">=17.0.0",
+    "react-dom": ">=17.0.0"
+  },
+  "devDependencies": {
+    "typescript": "^4.5.0",
+    "react": "^17.0.0",
+    "react-dom": "^17.0.0",
+    "@types/react": "^17.0.0",
+    "@types/react-dom": "^17.0.0"
+  },
+  "keywords": [
+    "wallet",
+    "turing",
+    "bsv",
+    "bitcoin",
+    "turing wallet"
+  ],
+  "author": "Joer",
+  "license": "ISC",
+  "description": "A provider that makes interacting with Turing Wallet a walk in the park."
+}
