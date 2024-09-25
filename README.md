@@ -68,7 +68,7 @@ const { tbcPubKey, ordPubKey, identityPubKey } = await wallet.getPubKeys();
 Before send TBC to a Bitcoin address(es), you may simply pass an `array` of payment objects.
 
 ```tsx
-const { txid, rawtx } = await wallet.sendBsv(paymentParams);
+const { txid, rawtx } = await wallet.sendTbc(paymentParams);
 ```
 
 ##### Get UTXOs

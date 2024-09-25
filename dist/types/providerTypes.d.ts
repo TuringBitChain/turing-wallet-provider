@@ -1,15 +1,15 @@
 export type PubKeys = {
-    bsvPubKey: string;
+    tbcPubKey: string;
     ordPubKey: string;
     identityPubKey: string;
 };
 export type Addresses = {
-    bsvAddress: string;
+    tbcAddress: string;
     ordAddress: string;
     identityAddress: string;
 };
 export type Balance = {
-    bsv: number;
+    tbc: number;
     satoshis: number;
     usdInCents: number;
 };
@@ -26,7 +26,7 @@ export type OrdinalData = {
     b?: File;
     sigma?: Sigma[];
     list?: Listing;
-    bsv20?: Bsv20;
+    tbc20?: Tbc20;
     lock?: Lock;
 };
 export type Lock = {
@@ -43,20 +43,20 @@ export type Listing = {
     price: number;
     payout: string;
 };
-export type Bsv20 = {
+export type Tbc20 = {
     id?: string;
     p: string;
     op: string;
     tick?: string;
     amt: string;
-    status?: Bsv20Status;
+    status?: Tbc20Status;
 };
 export type Origin = {
     outpoint: string;
     data?: OrdinalData;
     num?: number;
 };
-export declare enum Bsv20Status {
+export declare enum Tbc20Status {
     Invalid = -1,
     Pending = 0,
     Valid = 1
@@ -92,7 +92,7 @@ export type SignedMessage = {
     message: string;
     derivationTag: DerivationTag;
 };
-export type SendBsv = {
+export type SendTbc = {
     address?: string;
     satoshis: number;
     data?: string[];
@@ -106,7 +106,7 @@ export type TransferOrdinal = {
 };
 export type InternalTuringTags = {
     label: "Turing";
-    id: "bsv";
+    id: "tbc";
     domain: "";
     meta: {};
 } | {
@@ -130,7 +130,7 @@ export type SignMessage = {
     message: string;
     encoding?: "utf8" | "hex" | "base64";
 };
-export type KeyTypes = "bsv" | "ord";
+export type KeyTypes = "tbc" | "ord";
 export type Broadcast = {
     rawtx: string;
     fund?: boolean;
@@ -186,9 +186,9 @@ export type SignatureResponse = {
     csIdx?: number;
 };
 /**
- * `SendBsvResponse` contains the result of sendBsv.
+ * `SendTbcResponse` contains the result of sendTbc.
  */
-export type SendBsvResponse = {
+export type SendTbcResponse = {
     txid: string;
     rawtx: string;
 };
@@ -238,7 +238,7 @@ export type TuringProviderType = {
     getSocialProfile: () => Promise<SocialProfile | undefined>;
     getBalance: () => Promise<Balance | undefined>;
     getOrdinals: () => Promise<Ordinal[] | undefined>;
-    sendBsv: (params: SendBsv[]) => Promise<SendBsvResponse | undefined>;
+    sendTbc: (params: SendTbc[]) => Promise<SendTbcResponse | undefined>;
     transferOrdinal: (params: TransferOrdinal) => Promise<string | undefined>;
     purchaseOrdinal: (params: PurchaseOrdinal) => Promise<string | undefined>;
     signMessage: (params: SignMessage) => Promise<SignedMessage | undefined>;
@@ -248,5 +248,5 @@ export type TuringProviderType = {
     getPaymentUtxos: () => Promise<Utxos[] | undefined>;
     generateTaggedKeys: (params: TaggedDerivationRequest) => Promise<TaggedDerivationResponse>;
     getTaggedKeys: (params: GetTaggedKeysRequest) => Promise<TaggedDerivationResponse[] | undefined>;
-    inscribe: (params: InscribeRequest[]) => Promise<SendBsvResponse | undefined>;
+    inscribe: (params: InscribeRequest[]) => Promise<SendTbcResponse | undefined>;
 };
