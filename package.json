@@ -1,6 +1,6 @@
 {
   "name": "turing-wallet-provider",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "files": [
@@ -23,7 +23,7 @@
   "keywords": [
     "wallet",
     "turing",
-    "bsv",
+    "tbc",
     "bitcoin",
     "turing wallet"
   ],
