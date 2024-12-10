@@ -92,8 +92,22 @@ export type SignedMessage = {
     message: string;
     derivationTag: DerivationTag;
 };
+export type TransactionFlag =
+    | "P2PKH"
+    | "CREATE_COLLECTION"
+    | "CREATE_NFT"
+    | "TRANSFER_NFT"
+    | "FT_MINT"
+    | "FT_TRANSFER"
+    | "FT_MERGE"
+    | "POOLNFT_MINT"
+    | "POOLNFT_INIT"
+    | "POOLNFT_LP"
+    | "POOLNFT_TOFT"
+    | "POOLNFT_TOTBC"
+    | "POOLNFT_MERGE";
 export type SendTransaction = {
-    flag: "P2PKH" | "CREATE_COLLECTION" | "CREATE_NFT" | "TRANSFER_NFT" | "FT_MINT" | "FT_TRANSFER" | "FT_MERGE" | "POOLNFT_MINT" | "POOLNFT_INIT" | "POOLNFT_LP" | "POOLNFT_TOFT" | "POOLNFT_TOTBC" | "POOLNFT_MERGE";
+    flag: TransactionFlag;
     satoshis?: number;
     address?: string;
     collection_data?: string;
