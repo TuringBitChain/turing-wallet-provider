@@ -1,17 +1,17 @@
-export type PubKeys = {
+export type PubKey = {
     tbcPubKey: string;
-    ordPubKey: string;
-    identityPubKey: string;
+    // ordPubKey: string;
+    // identityPubKey: string;
 };
-export type Addresses = {
+export type Address = {
     tbcAddress: string;
-    ordAddress: string;
-    identityAddress: string;
+    // ordAddress: string;
+    // identityAddress: string;
 };
 export type Balance = {
     tbc: number;
-    satoshis: number;
-    usdInCents: number;
+    // satoshis: number;
+    // usdInCents: number;
 };
 export type SocialProfile = {
     displayName: string;
@@ -92,12 +92,18 @@ export type SignedMessage = {
     message: string;
     derivationTag: DerivationTag;
 };
-export type SendTbc = {
+export type SendTransaction = {
+    flag: "P2PKH" | "CREATE_COLLECTION" | "CREATE_NFT" | "TRANSFER_NFT" | "FT_MINT" | "FT_TRANSFER" | "FT_MERGE" | "POOLNFT_MINT" | "POOLNFT_INIT" | "POOLNFT_LP" | "POOLNFT_TOFT" | "POOLNFT_TOTBC" | "POOLNFT_MERGE";
+    satoshis?: number;
     address?: string;
-    satoshis: number;
-    data?: string[];
-    script?: string;
-    inscription?: RawInscription;
+    collection_data?: string;
+    ft_data?: string;
+    nft_data?: string;
+    collection_id?: string;
+    nft_contract_address?: string;
+    ft_contract_address?: string;
+    tbc_amount?: number;
+    ft_amount?: number;
 };
 export type TransferOrdinal = {
     address: string;
@@ -167,8 +173,8 @@ export type SignatureRequest = {
      * If undefined, the whole script is used.
      * */
     csIdx?: number;
-    /** The extra information for signing. */
-    data?: unknown;
+    /** The flag to distinguish the transaction.*/
+    flag: "P2PKH" | "FT_MINT" | "FT_TRANSFER" | "FT_MERGE" | "POOLNFT_MINT" | "POOLNFT_INIT" | "POOLNFT_LP" | "POOLNFT_TOFT" | "POOLNFT_TOTBC" | "POOLNFT_MERGE";
 };
 /**
  * `SignatureResponse` contains the signing result corresponding to a `SignatureRequest`.
@@ -188,7 +194,7 @@ export type SignatureResponse = {
 /**
  * `SendTbcResponse` contains the result of sendTbc.
  */
-export type SendTbcResponse = {
+export type SendTransactionResponse = {
     txid: string;
     rawtx: string;
 };
@@ -233,20 +239,20 @@ export type TuringProviderType = {
     connect: () => Promise<string | undefined>;
     disconnect: () => Promise<boolean>;
     isConnected: () => Promise<boolean>;
-    getPubKeys: () => Promise<PubKeys | undefined>;
-    getAddresses: () => Promise<Addresses | undefined>;
-    getSocialProfile: () => Promise<SocialProfile | undefined>;
+    getPubKey: () => Promise<PubKey | undefined>;
+    getAddress: () => Promise<Address | undefined>;
+    // getSocialProfile: () => Promise<SocialProfile | undefined>;
     getBalance: () => Promise<Balance | undefined>;
-    getOrdinals: () => Promise<Ordinal[] | undefined>;
-    sendTbc: (params: SendTbc[]) => Promise<SendTbcResponse | undefined>;
-    transferOrdinal: (params: TransferOrdinal) => Promise<string | undefined>;
-    purchaseOrdinal: (params: PurchaseOrdinal) => Promise<string | undefined>;
-    signMessage: (params: SignMessage) => Promise<SignedMessage | undefined>;
-    getSignatures: (params: GetSignatures) => Promise<SignatureResponse[] | undefined>;
+    // getOrdinals: () => Promise<Ordinal[] | undefined>;
+    sendTransaction: (params: SendTransaction[]) => Promise<SendTransactionResponse | undefined>;
+    // transferOrdinal: (params: TransferOrdinal) => Promise<string | undefined>;
+    // purchaseOrdinal: (params: PurchaseOrdinal) => Promise<string | undefined>;
+    // signMessage: (params: SignMessage) => Promise<SignedMessage | undefined>;
+    // getSignatures: (params: GetSignatures) => Promise<SignatureResponse[] | undefined>;
     broadcast: (params: Broadcast) => Promise<string | undefined>;
-    getExchangeRate: () => Promise<number | undefined>;
+    // getExchangeRate: () => Promise<number | undefined>;
     getPaymentUtxos: () => Promise<Utxos[] | undefined>;
-    generateTaggedKeys: (params: TaggedDerivationRequest) => Promise<TaggedDerivationResponse>;
-    getTaggedKeys: (params: GetTaggedKeysRequest) => Promise<TaggedDerivationResponse[] | undefined>;
-    inscribe: (params: InscribeRequest[]) => Promise<SendTbcResponse | undefined>;
+    // generateTaggedKeys: (params: TaggedDerivationRequest) => Promise<TaggedDerivationResponse>;
+    // getTaggedKeys: (params: GetTaggedKeysRequest) => Promise<TaggedDerivationResponse[] | undefined>;
+    // inscribe: (params: InscribeRequest[]) => Promise<SendTbcResponse | undefined>;
 };
