@@ -92,20 +92,7 @@ export type SignedMessage = {
     message: string;
     derivationTag: DerivationTag;
 };
-export type TransactionFlag =
-    | "P2PKH"
-    | "CREATE_COLLECTION"
-    | "CREATE_NFT"
-    | "TRANSFER_NFT"
-    | "FT_MINT"
-    | "FT_TRANSFER"
-    | "FT_MERGE"
-    | "POOLNFT_MINT"
-    | "POOLNFT_INIT"
-    | "POOLNFT_LP"
-    | "POOLNFT_TOFT"
-    | "POOLNFT_TOTBC"
-    | "POOLNFT_MERGE";
+export type TransactionFlag = "P2PKH" | "COLLECTION_CREATE" | "NFT_CREATE" | "NFT_TRANSFER" | "FT_MINT" | "FT_TRANSFER" | "POOLNFT_MINT" | "POOLNFT_INIT" | "POOLNFT_LP_INCREASE" | "POOLNFT_LP_CONSUME" | "POOLNFT_SWAP_TO_TOKEN" | "POOLNFT_SWAP_TO_TBC" | "POOLNFT_MERGE";
 export type SendTransaction = {
     flag: TransactionFlag;
     satoshis?: number;
@@ -188,7 +175,7 @@ export type SignatureRequest = {
      * */
     csIdx?: number;
     /** The flag to distinguish the transaction.*/
-    flag: "P2PKH" | "FT_MINT" | "FT_TRANSFER" | "FT_MERGE" | "POOLNFT_MINT" | "POOLNFT_INIT" | "POOLNFT_LP" | "POOLNFT_TOFT" | "POOLNFT_TOTBC" | "POOLNFT_MERGE";
+    flag: TransactionFlag;
 };
 /**
  * `SignatureResponse` contains the signing result corresponding to a `SignatureRequest`.
