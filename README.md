@@ -1,0 +1,300 @@
+### connect
+
+```tsx
+npm install turing-wallet-provider@latest
+
+import { TuringProvider } from "turing-wallet-provider";
+
+root.render(
+  <TuringProvider>
+    <App />
+  </TuringProvider>
+);
+```
+
+```tsx
+import { useTuringsWallet } from 'turing-wallet-provider';
+
+const wallet = useTuringsWallet();
+await wallet.connect();
+```
+
+### disconnect
+
+```tsx
+const wallet = useTuringsWallet();
+await wallet.disconnect();
+```
+
+### isConnected
+
+```tsx
+const wallet = useTuringsWallet();
+const ture/false = await wallet.isConnected();
+```
+
+### getPubKey
+
+```tsx
+const wallet = useTuringsWallet();
+const {tbcPubKey} = await wallet.getPubKey(); //tbcPubKey为string类型
+```
+
+### getAddress
+
+```tsx
+const wallet = useTuringsWallet();
+const {tbcAddress} = await wallet.getAddress(); //tbcAddress为string类型
+```
+
+### getBalance
+
+```tsx
+const wallet = useTuringsWallet();
+const {tbc} = await wallet.getBalance();//tbc为number类型，单位为tbc
+```
+
+### getPaymentUtxos
+
+```tsx
+const wallet = useTuringsWallet();
+try {
+    const utxos = await wallet.getPaymentUtxos();
+    console.log(utxos);
+} catch (err) {
+    console.log(err);
+}
+
+[
+    {
+        satoshis: 205551
+        script: "76a914b681d8032b448405d44e82807fab2c8894eed57788ac"
+        txid: "c58e8b0dd25e56af0696b026c1961dccd0cab3fe42fb2f3ac934ebdc3accbb40"
+        vout: 0
+    },
+    {
+        satoshis: 19909
+        script: "76a914b681d8032b448405d44e82807fab2c8894eed57788ac"
+        txid: "4c52add57a2c9cda29501a810a1312eaee9423d28440a09acbf5d9d8d0467382"
+        vout: 0
+    }
+]//模拟的输出
+```
+
+### signMessage
+
+```tsx
+const wallet = useTuringsWallet();
+try{
+    const { address, pubKey, sig, message } = await wallet.signMessage({ message: "hello world", encoding: "base64" });//encoding可为utf-8,base64,hex
+}catch(error){
+    console.log(err);
+}
+
+//本地验证签名
+import * as tbc from "tbc-lib-js"
+
+const msg_buf = Buffer.from(message,encoding);
+const true/false = tbc.Message.verify(msg_buf,address,sig);
+```
+
+### sendTransaction
+
+```tsx
+interface FTData {
+​	name :string;
+    symbol :string;
+​	decimal :number;
+​	amount :number;
+};
+
+interface CollectionData {
+    collectionName: string;
+    description: string;
+    supply: number;
+    file: string;//file为图片base64编码后数据
+};
+
+interface NFTData {
+    nftName: string;
+    symbol: string;
+    discription: string;
+    attributes: string;
+    file?: string;//file为图片base64编码后数据,若无则为引用合集图片
+};
+
+interface RequestParam = {
+    flag: "P2PKH" | "COLLECTION_CREATE" | "NFT_CREATE" | "NFT_TRANSFER" | "FT_MINT" | "FT_TRANSFER" | "POOLNFT_MINT" | "POOLNFT_INIT" | "POOLNFT_LP_INCREASE" |"POOLNFT_LP_CONSUME"| "POOLNFT_SWAP_TO_TOKEN" | "POOLNFT_SWAP_TO_TBC" | "POOLNFT_MERGE"|"FTLP_MERGE";
+    address？: string;//交易接收者地址
+    satoshis?: number;//单位为satoshis
+    collection_data?: string; //json格式传
+    ft_data?: string; //json格式传
+    nft_data?: string;	//json格式传
+    collection_id?: string;
+    nft_contract_address?: string;
+    ft_contract_address?: string;
+    tbc_amount?: number;
+    ft_amount?: number;
+    merge_times?:number;
+};
+
+const params = [param:RequestParam] //目前参数里只能放一个对象，有批量发送需求再扩展
+```
+
+#### P2PKH
+
+```
+const params = [{
+	flag:"P2PKH",
+    satoshis: 1000,
+    address: "",
+}] ;
+const { txid, rawtx } = await wallet.sendTransaction(params);
+```
+
+#### COLLECTION_CREATE
+
+```
+const params = [{
+	flag:"COLLECTION_CREATE",
+    collection_data:"",
+}];
+const { txid, rawtx } = await wallet.sendTransaction(params);
+```
+
+#### NFT_CREATE
+
+```
+const params = [{
+	flag:"NFT_CREATE",
+    nft_data:"",
+    collection_id:""
+}];
+const { txid, rawtx } = await wallet.sendTransaction(params);
+```
+
+#### NFT_TRANSFER
+
+```ts
+const params = [{
+	flag:"NFT_TRANSFER",
+    nft_contract_address:"",
+    address:""
+}];
+const { txid, rawtx } = await wallet.sendTransaction(params);
+```
+
+#### FT_MINT
+
+```
+const params = [{
+	flag:"FT_MINT",
+    ft_data:""
+}];
+const { txid, rawtx } = await wallet.sendTransaction(params);
+```
+
+#### FT_TRANSFER
+
+```
+const params = [{
+	flag:"FT_TRANSFER",
+    ft_contract_address:"",
+    ft_amount:0.1,
+    address::""
+}];
+const { txid, rawtx } = await wallet.sendTransaction(params);
+```
+
+#### POOLNFT_MINT
+
+```
+const params = [{
+	flag:"POOLNFT_MINT",
+    ft_contract_address:"",
+}];
+const { txid, rawtx } = await wallet.sendTransaction(params);
+```
+
+#### POOLNFT_INIT
+
+```
+const params = [{
+	flag:"POOLNFT_INIT",
+    nft_contract_address:"",
+    address:"",
+    tbc_amount:30,
+    ft_amount:1000
+}];
+const { txid, rawtx } = await wallet.sendTransaction(params);
+```
+
+#### POOLNFT_LP_INCREASE
+
+```
+const params = [{
+	flag:"POOLNFT_LP_INCREASE",
+    nft_contract_address:"",
+    address:"",
+    tbc_amount:3
+}];
+const { txid, rawtx } = await wallet.sendTransaction(params);
+```
+
+#### POOLNFT_LP_CONSUME
+
+```
+const params = [{
+	flag:"POOLNFT_LP_CONSUME",
+    nft_contract_address:"",
+    address:""
+    ft_amount:100
+}];
+const { txid, rawtx } = await wallet.sendTransaction(params);
+```
+
+#### POOLNFT_SWAP_TO_TOKEN
+
+```
+const params = [{
+	flag:"POOLNFT_SWAP_TO_TOKEN",
+    nft_contract_address:"",
+    address:"",
+    tbc_amount:10
+}];
+const { txid, rawtx } = await wallet.sendTransaction(params);
+```
+
+#### POOLNFT_SWAP_TO_TBC
+
+```
+const params = [{
+	flag:"POOLNFT_SWAP_TO_TBC",
+    nft_contract_address:"",
+    address:"",
+    ft_amount:10 
+}];
+const { txid, rawtx } = await wallet.sendTransaction(params);
+```
+
+#### POOLNFT_MERGE
+
+```
+const params = [{
+	flag:"POOLNFT_MERGE",
+    nft_contract_address:"",
+    merge_times:1; //1-10次
+}];
+const { txid, rawtx } = await wallet.sendTransaction(params);
+```
+
+#### FTLP_MERGE
+
+```
+const params = [{
+	flag:"POOLNFT_MERGE",
+    nft_contract_address:""
+}];
+const { txid, rawtx } = await wallet.sendTransaction(params);
+```
+
