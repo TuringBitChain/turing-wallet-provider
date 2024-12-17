@@ -88,7 +88,7 @@ const wallet = useTuringsWallet();
 try{
     const { address, pubKey, sig, message } = await wallet.signMessage({ message: "hello world", encoding: "base64" });//encoding可为utf-8,base64,hex
 }catch(error){
-    console.log(err);
+    console.log(error);
 }
 
 //本地验证签名
@@ -96,6 +96,34 @@ import * as tbc from "tbc-lib-js"
 
 const msg_buf = Buffer.from(message,encoding);
 const true/false = tbc.Message.verify(msg_buf,address,sig);
+```
+
+### encrypt
+
+```tsx
+const wallet = useTuringsWallet();
+try{
+   const encryptedMessage = await wallet.encrypt(message);
+   if(encryptedMessage){
+   	   console.log(encryptedMessage)
+   }
+}catch(error){
+     console.log(error);
+}
+```
+
+### decrypt
+
+```
+const wallet = useTuringsWallet();
+try{
+   const decryptedMessage = await wallet.decrypt(message);
+   if(decryptedMessage){
+   	   console.log(decryptedMessage)
+   }
+}catch(error){
+     console.log(error);
+}
 ```
 
 ### sendTransaction
