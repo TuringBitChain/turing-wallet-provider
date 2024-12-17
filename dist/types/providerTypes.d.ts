@@ -51,6 +51,26 @@ export type SendTransactionResponse = {
     rawtx: string;
 };
 
+export type Encrypt = {
+    message: string;
+    pubKey: string;
+    encoding?: 'utf8' | 'hex' | 'base64';
+};
+
+export type Decrypt = {
+    message: string;
+    encoding?: 'utf8' | 'hex' | 'base64';
+};
+
+export type EncryptResponse = {
+    encryptedMessage: string;
+};
+
+export type DecryptResponse = {
+    decryptedMessage: string;
+};
+
+
 export type TuringProviderType = {
     isReady: boolean;
     connect: () => Promise<string | undefined>;
@@ -62,4 +82,6 @@ export type TuringProviderType = {
     sendTransaction: (params: SendTransaction[]) => Promise<SendTransactionResponse | undefined>;
     signMessage: (params: SignMessage) => Promise<SignedMessage | undefined>;
     getPaymentUtxos: () => Promise<Utxos[] | undefined>;
+    encrypt: (params: Encrypt) => Promise<EncryptResponse | undefined>;
+    decrypt: (params: Decrypt) => Promise<DecryptResponse | undefined>;
 }
