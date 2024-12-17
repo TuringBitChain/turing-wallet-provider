@@ -53,13 +53,10 @@ export type SendTransactionResponse = {
 
 export type Encrypt = {
     message: string;
-    pubKey: string;
-    encoding?: 'utf8' | 'hex' | 'base64';
 };
 
 export type Decrypt = {
     message: string;
-    encoding?: 'utf8' | 'hex' | 'base64';
 };
 
 export type EncryptResponse = {
