@@ -320,7 +320,7 @@ const { txid, rawtx } = await wallet.sendTransaction(params);
 
 ```
 const params = [{
-	flag:"POOLNFT_MERGE",
+	flag:"FTLP_MERGE",
     nft_contract_address:""
 }];
 const { txid, rawtx } = await wallet.sendTransaction(params);
