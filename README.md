@@ -105,7 +105,7 @@ const wallet = useTuringsWallet();
 try{
    const encryptedMessage = await wallet.encrypt(message);
    if(encryptedMessage){
-   	   console.log(encryptedMessage)
+       console.log(encryptedMessage)
    }
 }catch(error){
      console.log(error);
@@ -119,7 +119,7 @@ const wallet = useTuringsWallet();
 try{
    const decryptedMessage = await wallet.decrypt(message);
    if(decryptedMessage){
-   	   console.log(decryptedMessage)
+       console.log(decryptedMessage)
    }
 }catch(error){
      console.log(error);
@@ -130,10 +130,10 @@ try{
 
 ```tsx
 interface FTData {
-​	name :string;
-    symbol :string;
-​	decimal :number;
-​	amount :number;
+​ name :string;
+   symbol :string;
+​ decimal :number;
+​ amount :number;
 };
 
 interface CollectionData {
@@ -146,7 +146,7 @@ interface CollectionData {
 interface NFTData {
     nftName: string;
     symbol: string;
-    discription: string;
+    description: string;
     attributes: string;
     file?: string;//file为图片base64编码后数据,若无则为引用合集图片
 };
@@ -157,7 +157,7 @@ interface RequestParam = {
     satoshis?: number;//单位为satoshis
     collection_data?: string; //json格式传
     ft_data?: string; //json格式传
-    nft_data?: string;	//json格式传
+    nft_data?: string; //json格式传
     collection_id?: string;
     nft_contract_address?: string;
     ft_contract_address?: string;
@@ -173,7 +173,7 @@ const params = [param:RequestParam] //目前参数里只能放一个对象，有
 
 ```
 const params = [{
-	flag:"P2PKH",
+ flag:"P2PKH",
     satoshis: 1000,
     address: "",
 }] ;
@@ -184,7 +184,7 @@ const { txid, rawtx } = await wallet.sendTransaction(params);
 
 ```
 const params = [{
-	flag:"COLLECTION_CREATE",
+ flag:"COLLECTION_CREATE",
     collection_data:"",
 }];
 const { txid, rawtx } = await wallet.sendTransaction(params);
@@ -194,7 +194,7 @@ const { txid, rawtx } = await wallet.sendTransaction(params);
 
 ```
 const params = [{
-	flag:"NFT_CREATE",
+ flag:"NFT_CREATE",
     nft_data:"",
     collection_id:""
 }];
@@ -205,7 +205,7 @@ const { txid, rawtx } = await wallet.sendTransaction(params);
 
 ```ts
 const params = [{
-	flag:"NFT_TRANSFER",
+ flag:"NFT_TRANSFER",
     nft_contract_address:"",
     address:""
 }];
@@ -216,7 +216,7 @@ const { txid, rawtx } = await wallet.sendTransaction(params);
 
 ```
 const params = [{
-	flag:"FT_MINT",
+ flag:"FT_MINT",
     ft_data:""
 }];
 const { txid, rawtx } = await wallet.sendTransaction(params);
@@ -226,7 +226,7 @@ const { txid, rawtx } = await wallet.sendTransaction(params);
 
 ```
 const params = [{
-	flag:"FT_TRANSFER",
+ flag:"FT_TRANSFER",
     ft_contract_address:"",
     ft_amount:0.1,
     address::""
@@ -238,7 +238,7 @@ const { txid, rawtx } = await wallet.sendTransaction(params);
 
 ```
 const params = [{
-	flag:"POOLNFT_MINT",
+ flag:"POOLNFT_MINT",
     ft_contract_address:"",
 }];
 const { txid, rawtx } = await wallet.sendTransaction(params);
@@ -248,7 +248,7 @@ const { txid, rawtx } = await wallet.sendTransaction(params);
 
 ```
 const params = [{
-	flag:"POOLNFT_INIT",
+ flag:"POOLNFT_INIT",
     nft_contract_address:"",
     address:"",
     tbc_amount:30,
@@ -261,7 +261,7 @@ const { txid, rawtx } = await wallet.sendTransaction(params);
 
 ```
 const params = [{
-	flag:"POOLNFT_LP_INCREASE",
+ flag:"POOLNFT_LP_INCREASE",
     nft_contract_address:"",
     address:"",
     tbc_amount:3
@@ -273,7 +273,7 @@ const { txid, rawtx } = await wallet.sendTransaction(params);
 
 ```
 const params = [{
-	flag:"POOLNFT_LP_CONSUME",
+ flag:"POOLNFT_LP_CONSUME",
     nft_contract_address:"",
     address:""
     ft_amount:100
@@ -285,7 +285,7 @@ const { txid, rawtx } = await wallet.sendTransaction(params);
 
 ```
 const params = [{
-	flag:"POOLNFT_SWAP_TO_TOKEN",
+ flag:"POOLNFT_SWAP_TO_TOKEN",
     nft_contract_address:"",
     address:"",
     tbc_amount:10
@@ -297,7 +297,7 @@ const { txid, rawtx } = await wallet.sendTransaction(params);
 
 ```
 const params = [{
-	flag:"POOLNFT_SWAP_TO_TBC",
+ flag:"POOLNFT_SWAP_TO_TBC",
     nft_contract_address:"",
     address:"",
     ft_amount:10 
@@ -309,7 +309,7 @@ const { txid, rawtx } = await wallet.sendTransaction(params);
 
 ```
 const params = [{
-	flag:"POOLNFT_MERGE",
+ flag:"POOLNFT_MERGE",
     nft_contract_address:"",
     merge_times:1; //1-10次
 }];
@@ -320,9 +320,8 @@ const { txid, rawtx } = await wallet.sendTransaction(params);
 
 ```
 const params = [{
-	flag:"FTLP_MERGE",
+ flag:"FTLP_MERGE",
     nft_contract_address:""
 }];
 const { txid, rawtx } = await wallet.sendTransaction(params);
 ```
-
