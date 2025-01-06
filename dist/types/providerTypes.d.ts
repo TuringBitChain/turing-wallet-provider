@@ -32,6 +32,7 @@ export type SendTransaction = {
     tbc_amount?: number;
     ft_amount?: number;
     merge_times?: number;
+    with_lock?: boolean
 };
 
 export type SignMessage = {
