@@ -240,6 +240,7 @@ const { txid, rawtx } = await wallet.sendTransaction(params);
 const params = [{
  flag:"POOLNFT_MINT",
     ft_contract_address:"",
+    with_lock?:false //默认值为false，为true则创建带哈希锁的poolNFT
 }];
 const { txid, rawtx } = await wallet.sendTransaction(params);
 ```
