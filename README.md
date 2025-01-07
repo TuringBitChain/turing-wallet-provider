@@ -164,6 +164,7 @@ interface RequestParam = {
     tbc_amount?: number;
     ft_amount?: number;
     merge_times?:number;
+    with_lock? boolean;
 };
 
 const params = [param:RequestParam] //目前参数里只能放一个对象，有批量发送需求再扩展
