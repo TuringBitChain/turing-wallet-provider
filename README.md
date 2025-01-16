@@ -165,6 +165,7 @@ interface RequestParam = {
     ft_amount?: number;
     merge_times?:number;
     with_lock? boolean;
+    version? number;
 };
 
 const params = [param:RequestParam] //目前参数里只能放一个对象，有批量发送需求再扩展
@@ -242,6 +243,7 @@ const params = [{
  flag:"POOLNFT_MINT",
     ft_contract_address:"",
     with_lock?:false //默认值为false，为true则创建带哈希锁的poolNFT
+     version:number
 }];
 const { txid, rawtx } = await wallet.sendTransaction(params);
 ```
@@ -255,6 +257,7 @@ const params = [{
     address:"",
     tbc_amount:30,
     ft_amount:1000
+     version:number
 }];
 const { txid, rawtx } = await wallet.sendTransaction(params);
 ```
