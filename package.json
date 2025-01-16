@@ -1,6 +1,6 @@
 {
   "name": "turing-wallet-provider",
-  "version": "1.1.5",
+  "version": "1.2.0",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "files": [
@@ -20,12 +20,8 @@
   },
   "keywords": [
     "wallet",
-    "turing",
     "tbc",
-    "bitcoin",
     "turing wallet"
   ],
-  "author": "Joe",
-  "license": "ISC",
-  "description": "A provider that makes interacting with Turing Wallet a walk in the park."
+  "description": "A provider help to connect Turing Wallet."
 }

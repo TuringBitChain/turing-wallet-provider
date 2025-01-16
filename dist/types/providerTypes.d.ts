@@ -65,7 +65,6 @@ export type Utxos = {
 
 export type SendTransactionResponse = {
   txid: string;
-  rawtx: string;
 };
 
 export type Encrypt = {
