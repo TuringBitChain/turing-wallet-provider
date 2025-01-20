@@ -178,7 +178,7 @@ const params = [param:RequestParam] //目前参数里只能放一个对象，有
 const params = [{
  flag:"P2PKH",
     satoshis: 1000,
-    addres: "",
+    address: "",
 }] ;
 const { txid } = await wallet.sendTransaction(params);
 ```
@@ -210,7 +210,7 @@ const { txid } = await wallet.sendTransaction(params);
 const params = [{
  flag:"NFT_TRANSFER",
     nft_contract_address:"",
-    addres:""
+    address:""
 }];
 const { txid } = await wallet.sendTransaction(params);
 ```
