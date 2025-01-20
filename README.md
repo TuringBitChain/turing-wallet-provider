@@ -165,8 +165,8 @@ interface RequestParam = {
     ft_amount?: number;
     merge_times?:number;
     with_lock? boolean;
-   poolNFT_version?: number; // 1或2
-    serviceFeeRate?: number; // 0-100
+    poolNFT_version?: number; // 1或2 
+    serviceFeeRate?: number; // 0-100  poolNFT_version为2有效 默认为25
 };
 
 const params = [param:RequestParam] //目前参数里只能放一个对象，有批量发送需求再扩展
