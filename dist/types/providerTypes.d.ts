@@ -49,6 +49,7 @@ export type SendTransaction = {
   with_lock?: boolean;
   poolNFT_version?: number;
   serviceFeeRate?: number;
+  serviceProvider_flag?: string;
 };
 
 export type SignMessage = {
