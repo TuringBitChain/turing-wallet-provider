@@ -131,7 +131,7 @@ try{
 ```tsx
 interface FTData {
 ​ name:string;
-  symbol :string;
+ symbol :string;
 ​ decimal :number;
 ​ amount :number;
 };
@@ -168,6 +168,7 @@ interface RequestParam = {
     poolNFT_version?: number; // 1或2 不提供默认为2
     serviceFeeRate?: number; // 0-100 poolNFT_version为2有效 不提供默认为25
     serverProvider_tag?:string; //poolNFT_version为2时为必需字段 poolNFT_version为1无效
+    lpPlan?:number //1或2 不提供默认为2 lp手续费方案, 方案1: LP 0.25%  swap服务商 0.09%  协议0.01%; 方案2: LP 0.05%  swap服务商 0.29%  协议0.01%
 };
 
 const params = [param:RequestParam] //目前参数里只能放一个对象，有批量发送需求再扩展
@@ -248,7 +249,7 @@ const params = [{
     serverProvider_tag?:"",
     serviceFeeRate?:25, // poolNFT_version为2时此参数有效，默认为25
     with_lock?:false //默认值为false，为true则创建带哈希锁的poolNFT
-
+    lpPlan?:2 //默认值为2
 }];
 const { txid } = await wallet.sendTransaction(params);
 ```
@@ -302,6 +303,7 @@ const params = [{
     address:"",
     tbc_amount:10,
     poolNFT_version?：2
+    lpPlan?:2 //默认值为2
 }];
 const { txid } = await wallet.sendTransaction(params);
 ```
@@ -315,6 +317,7 @@ const params = [{
     address:"",
     ft_amount:10,
     poolNFT_version?：2
+    lpPlan?:2 //默认值为2
 }];
 const { txid } = await wallet.sendTransaction(params);
 ```

@@ -50,6 +50,7 @@ export type SendTransaction = {
   poolNFT_version?: number;
   serviceFeeRate?: number;
   serviceProvider_flag?: string;
+  lpPlan?: number;
 };
 
 export type SignMessage = {
