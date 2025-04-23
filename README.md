@@ -234,7 +234,8 @@ const params = [{
     flag:"FT_TRANSFER",
     ft_contract_address:"",
     ft_amount:0.1,
-    address:""
+    tbc_amount?: 1, //同时转ft和tbc时候可提供参数
+    address:"",
 }];
 const { txid } = await wallet.sendTransaction(params);
 ```
