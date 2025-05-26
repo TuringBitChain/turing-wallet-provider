@@ -169,7 +169,7 @@ interface RequestParam = {
     serviceFeeRate?: number; // 0-100 poolNFT_version为2有效 不提供默认为25
     serverProvider_tag?:string; //poolNFT_version为2时为必需字段 poolNFT_version为1无效
     lpPlan?:number //1或2 不提供默认为1 lp手续费方案, 方案1: LP 0.25%  swap服务商 0.09%  协议0.01%; 方案2: LP 0.05%  swap服务商 0.29%  协议0.01%
-    domain?:string // 设置请求后构建及广播交易使用的节点和api服务 只支持https 不提供默认值是https://turingwallet.xyz
+    domain?:string // 设置构建及广播交易使用的节点和api服务 只支持https 不提供默认值是turingwallet.xyz 具体结构为https://${domain}/v1/tbc/main
 };
 
 const params = [param:RequestParam] //目前参数里只能放一个对象，有批量发送需求再扩展
@@ -183,7 +183,7 @@ const params = [
     flag: "P2PKH",
     satoshis: 1000,
     address: "",
-    domain?: "",
+    domain: "",
   },
 ];
 const { txid } = await wallet.sendTransaction(params);
@@ -196,7 +196,7 @@ const params = [
   {
     flag: "COLLECTION_CREATE",
     collection_data: "",
-    domain?: "",
+    domain: "",
   },
 ];
 const { txid } = await wallet.sendTransaction(params);
@@ -210,7 +210,7 @@ const params = [
     flag: "NFT_CREATE",
     nft_data: "",
     collection_id: "",
-    domain?: "",
+    domain: "",
   },
 ];
 const { txid } = await wallet.sendTransaction(params);
@@ -224,7 +224,7 @@ const params = [
     flag: "NFT_TRANSFER",
     nft_contract_address: "",
     address: "",
-    domain?: "",
+    domain: "",
   },
 ];
 const { txid } = await wallet.sendTransaction(params);
@@ -237,7 +237,7 @@ const params = [
   {
     flag: "FT_MINT",
     ft_data: "",
-    domain?: "",
+    domain: "",
   },
 ];
 const { txid } = await wallet.sendTransaction(params);
@@ -253,7 +253,7 @@ const params = [
     ft_amount: 0.1,
     tbc_amount: 1, //同时转ft和tbc时候可提供参数
     address: "",
-    domain?: "",
+    domain: "",
   },
 ];
 const { txid } = await wallet.sendTransaction(params);
