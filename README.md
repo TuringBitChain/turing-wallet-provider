@@ -13,7 +13,7 @@ root.render(
 ```
 
 ```tsx
-import { useTuringsWallet } from 'turing-wallet-provider';
+import { useTuringsWallet } from "turing-wallet-provider";
 
 const wallet = useTuringsWallet();
 await wallet.connect();
@@ -37,21 +37,21 @@ const ture/false = await wallet.isConnected();
 
 ```tsx
 const wallet = useTuringsWallet();
-const {tbcPubKey} = await wallet.getPubKey(); //tbcPubKey为string类型
+const { tbcPubKey } = await wallet.getPubKey(); //tbcPubKey为string类型
 ```
 
 ## getAddress
 
 ```tsx
 const wallet = useTuringsWallet();
-const {tbcAddress} = await wallet.getAddress(); //tbcAddress为string类型
+const { tbcAddress } = await wallet.getAddress(); //tbcAddress为string类型
 ```
 
 ## getBalance
 
 ```tsx
 const wallet = useTuringsWallet();
-const {tbc} = await wallet.getBalance();//tbc为number类型，单位为tbc
+const { tbc } = await wallet.getBalance(); //tbc为number类型，单位为tbc
 ```
 
 ## getPaymentUtxos
@@ -102,13 +102,13 @@ const true/false = tbc.Message.verify(msg_buf,address,sig);
 
 ```tsx
 const wallet = useTuringsWallet();
-try{
-   const encryptedMessage = await wallet.encrypt(message);
-   if(encryptedMessage){
-       console.log(encryptedMessage)
-   }
-}catch(error){
-     console.log(error);
+try {
+  const encryptedMessage = await wallet.encrypt(message);
+  if (encryptedMessage) {
+    console.log(encryptedMessage);
+  }
+} catch (error) {
+  console.log(error);
 }
 ```
 
@@ -116,13 +116,13 @@ try{
 
 ```ts
 const wallet = useTuringsWallet();
-try{
-   const decryptedMessage = await wallet.decrypt(message);
-   if(decryptedMessage){
-       console.log(decryptedMessage)
-   }
-}catch(error){
-     console.log(error);
+try {
+  const decryptedMessage = await wallet.decrypt(message);
+  if (decryptedMessage) {
+    console.log(decryptedMessage);
+  }
+} catch (error) {
+  console.log(error);
 }
 ```
 
@@ -169,6 +169,7 @@ interface RequestParam = {
     serviceFeeRate?: number; // 0-100 poolNFT_version为2有效 不提供默认为25
     serverProvider_tag?:string; //poolNFT_version为2时为必需字段 poolNFT_version为1无效
     lpPlan?:number //1或2 不提供默认为1 lp手续费方案, 方案1: LP 0.25%  swap服务商 0.09%  协议0.01%; 方案2: LP 0.05%  swap服务商 0.29%  协议0.01%
+    domain?:string // 设置请求后构建及广播交易使用的节点和api服务 只支持https 不提供默认值是https://turingwallet.xyz
 };
 
 const params = [param:RequestParam] //目前参数里只能放一个对象，有批量发送需求再扩展
@@ -177,66 +178,84 @@ const params = [param:RequestParam] //目前参数里只能放一个对象，有
 ### P2PKH
 
 ```ts
-const params = [{
- flag:"P2PKH",
+const params = [
+  {
+    flag: "P2PKH",
     satoshis: 1000,
     address: "",
-}] ;
+    domain?: "",
+  },
+];
 const { txid } = await wallet.sendTransaction(params);
 ```
 
 ### COLLECTION_CREATE
 
 ```ts
-const params = [{
-    flag:"COLLECTION_CREATE",
-    collection_data:"",
-}];
+const params = [
+  {
+    flag: "COLLECTION_CREATE",
+    collection_data: "",
+    domain?: "",
+  },
+];
 const { txid } = await wallet.sendTransaction(params);
 ```
 
 ### NFT_CREATE
 
 ```ts
-const params = [{
-    flag:"NFT_CREATE",
-    nft_data:"",
-    collection_id:""
-}];
+const params = [
+  {
+    flag: "NFT_CREATE",
+    nft_data: "",
+    collection_id: "",
+    domain?: "",
+  },
+];
 const { txid } = await wallet.sendTransaction(params);
 ```
 
 ### NFT_TRANSFER
 
 ```ts
-const params = [{
- flag:"NFT_TRANSFER",
-    nft_contract_address:"",
-    address:""
-}];
+const params = [
+  {
+    flag: "NFT_TRANSFER",
+    nft_contract_address: "",
+    address: "",
+    domain?: "",
+  },
+];
 const { txid } = await wallet.sendTransaction(params);
 ```
 
 ### FT_MINT
 
 ```ts
-const params = [{
-    flag:"FT_MINT",
-    ft_data:""
-}];
+const params = [
+  {
+    flag: "FT_MINT",
+    ft_data: "",
+    domain?: "",
+  },
+];
 const { txid } = await wallet.sendTransaction(params);
 ```
 
 ### FT_TRANSFER
 
 ```ts
-const params = [{
-    flag:"FT_TRANSFER",
-    ft_contract_address:"",
-    ft_amount:0.1,
-    tbc_amount?: 1, //同时转ft和tbc时候可提供参数
-    address:"",
-}];
+const params = [
+  {
+    flag: "FT_TRANSFER",
+    ft_contract_address: "",
+    ft_amount: 0.1,
+    tbc_amount: 1, //同时转ft和tbc时候可提供参数
+    address: "",
+    domain?: "",
+  },
+];
 const { txid } = await wallet.sendTransaction(params);
 ```
 
@@ -251,6 +270,7 @@ const params = [{
     serviceFeeRate?:25, // poolNFT_version为2时此参数有效，默认为25
     with_lock?:false //默认值为false，为true则创建带哈希锁的poolNFT
     lpPlan?:1 //默认值为1
+    domain?: "",
 }];
 const { txid } = await wallet.sendTransaction(params);
 ```
@@ -264,7 +284,8 @@ const params = [{
     address:"",
     tbc_amount:30,
     ft_amount:1000,
-    poolNFT_version?：2
+    poolNFT_version?：2,
+    domain?: "",
 }];
 const { txid, rawtx } = await wallet.sendTransaction(params);
 ```
@@ -277,7 +298,8 @@ const params = [{
     nft_contract_address:"",
     address:"",
     tbc_amount:3,
-    poolNFT_version?：2
+    poolNFT_version?：2,
+    domain?: "",
 }];
 const { txid, rawtx } = await wallet.sendTransaction(params);
 ```
@@ -290,7 +312,8 @@ const params = [{
     nft_contract_address:"",
     address:"",
     ft_amount:100,
-    poolNFT_version?：2
+    poolNFT_version?：2,
+    domain?: "",
 }];
 const { txid } = await wallet.sendTransaction(params);
 ```
@@ -304,7 +327,8 @@ const params = [{
     address:"",
     tbc_amount:10,
     poolNFT_version?：2
-    lpPlan?:1 //默认值为1
+    lpPlan?:1 //默认值为1,
+    domain?: "",
 }];
 const { txid } = await wallet.sendTransaction(params);
 ```
@@ -318,7 +342,8 @@ const params = [{
     address:"",
     ft_amount:10,
     poolNFT_version?：2
-    lpPlan?:1 //默认值为1
+    lpPlan?:1 //默认值为1,
+    domain?: "",
 }];
 const { txid } = await wallet.sendTransaction(params);
 ```
@@ -331,6 +356,7 @@ const params = [{
     nft_contract_address:"",
     poolNFT_version?：2,
     merge_times?:1, //1-10次 默认为10次 不足10次会提前终止
+    domain?: "",
 }];
 const { txid } = await wallet.sendTransaction(params);
 ```
@@ -341,7 +367,8 @@ const { txid } = await wallet.sendTransaction(params);
 const params = [{
     flag:"FTLP_MERGE",
     nft_contract_address:"",
-    poolNFT_version?：2
+    poolNFT_version?：2,
+    domain?: "",
 }];
 const { txid } = await wallet.sendTransaction(params);
 ```

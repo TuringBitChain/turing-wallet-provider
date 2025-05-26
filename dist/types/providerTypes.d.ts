@@ -51,6 +51,7 @@ export type SendTransaction = {
   serviceFeeRate?: number;
   serviceProvider_flag?: string;
   lpPlan?: number;
+  domain?: string;
 };
 
 export type SignMessage = {
