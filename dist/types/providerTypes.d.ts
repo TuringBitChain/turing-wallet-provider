@@ -10,6 +10,12 @@ export type Balance = {
   tbc: number;
 };
 
+export type Info = {
+  name: string;
+  platform: string;
+  version: string;
+}
+
 export type SignedMessage = {
   address: string;
   pubKey: string;
@@ -94,6 +100,7 @@ export type TuringProviderType = {
   getPubKey: () => Promise<PubKey | undefined>;
   getAddress: () => Promise<Address | undefined>;
   getBalance: () => Promise<Balance | undefined>;
+  getInfo: () => Promise<Info | undefined>;
   sendTransaction: (
     params: SendTransaction[]
   ) => Promise<SendTransactionResponse | undefined>;

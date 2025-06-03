@@ -54,6 +54,14 @@ const wallet = useTuringsWallet();
 const { tbc } = await wallet.getBalance(); //tbc为number类型，单位为tbc
 ```
 
+## getInfo
+
+```tsx
+const wallet = useTuringsWallet();
+const {name,platform,version} = await wallet.getInfo();
+{Turing,android,1.0.0}示例的返回值
+```
+
 ## getPaymentUtxos
 
 ```tsx
