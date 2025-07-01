@@ -173,6 +173,9 @@ interface RequestParam = {
     ft_amount?: number;
     merge_times?:number; //可选字段 不提供默认为10
     with_lock? boolean;
+    lpCostAddress?: string;//设置添加流动性扣款地址
+    lpCostAmount?: number;//设置添加流动性扣款TBC数量
+    pubKeyLock?: string[];
     poolNFT_version?: number; // 1或2 不提供默认为2
     serviceFeeRate?: number; // 0-100 poolNFT_version为2有效 不提供默认为25
     serverProvider_tag?:string; //poolNFT_version为2时为必需字段 poolNFT_version为1无效
@@ -277,6 +280,9 @@ const params = [{
     serverProvider_tag?:"",
     serviceFeeRate?:25, // poolNFT_version为2时此参数有效，默认为25
     with_lock?:false //默认值为false，为true则创建带哈希锁的poolNFT
+    pubKeyLock?:["pubkey1","pubkey2"];
+    lpCostAddress?:"";//设置添加流动性扣款地址
+    lpCostTBC?:5;//设置添加流动性扣款TBC数量
     lpPlan?:1 //默认值为1
     domain?: "",
 }];

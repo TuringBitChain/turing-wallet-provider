@@ -53,6 +53,9 @@ export type SendTransaction = {
   ft_amount?: number;
   merge_times?: number;
   with_lock?: boolean;
+  lpCostAddress?: string;
+	lpCostAmount?: number;
+	pubKeyLock?: string[];
   poolNFT_version?: number;
   serviceFeeRate?: number;
   serviceProvider_flag?: string;
