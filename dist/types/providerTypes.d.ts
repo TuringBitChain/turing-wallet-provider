@@ -16,13 +16,6 @@ export type Info = {
   version: string;
 }
 
-export type SignedMessage = {
-  address: string;
-  pubKey: string;
-  sig: string;
-  message: string;
-};
-
 export type TransactionFlag =
   | "P2PKH"
   | "COLLECTION_CREATE"
@@ -54,8 +47,8 @@ export type SendTransaction = {
   merge_times?: number;
   with_lock?: boolean;
   lpCostAddress?: string;
-	lpCostAmount?: number;
-	pubKeyLock?: string[];
+  lpCostAmount?: number;
+  pubKeyLock?: string[];
   poolNFT_version?: number;
   serviceFeeRate?: number;
   serviceProvider_flag?: string;
@@ -63,20 +56,33 @@ export type SendTransaction = {
   domain?: string;
 };
 
+export type SendTransactionResponse = {
+  txid?: string;
+  error?: string;
+};
+
+export type SignTransaction = {
+  ttxraws: string[];
+  utxos_satoshis: number[][];
+  script_pubkeys: string[][];
+};
+
+export type SignTransactionResponse = {
+  sig?: string[][];
+  error?: string;
+};
+
 export type SignMessage = {
   message: string;
-  encoding?: "utf8" | "hex" | "base64";
+  encoding: "utf8" | "hex" | "base64";
 };
 
-export type Utxos = {
-  satoshis: number;
-  script: string;
-  txid: string;
-  vout: number;
-};
-
-export type SendTransactionResponse = {
-  txid: string;
+export type SignMessageResponse = {
+  maddress?: string;
+  pubkey?: string;
+  message?: string;
+  sig?: string;
+  error?: string;
 };
 
 export type Encrypt = {
@@ -88,11 +94,13 @@ export type Decrypt = {
 };
 
 export type EncryptResponse = {
-  encryptedMessage: string;
+  encryptedMessage?: string;
+  error?: string;
 };
 
 export type DecryptResponse = {
-  decryptedMessage: string;
+  decryptedMessage?: string;
+  error?: string;
 };
 
 export type TuringProviderType = {
@@ -107,8 +115,8 @@ export type TuringProviderType = {
   sendTransaction: (
     params: SendTransaction[]
   ) => Promise<SendTransactionResponse | undefined>;
-  signMessage: (params: SignMessage) => Promise<SignedMessage | undefined>;
-  getPaymentUtxos: () => Promise<Utxos[] | undefined>;
+  signTransaction: (params: SignTransaction) => Promise<SignTransactionResponse | undefined>;
+  signMessage: (params: SignMessage) => Promise<SignMessageResponse | undefined>;
   encrypt: (params: Encrypt) => Promise<EncryptResponse | undefined>;
   decrypt: (params: Decrypt) => Promise<DecryptResponse | undefined>;
 };

@@ -1,6 +1,6 @@
 # connect
 
-```tsx
+```ts
 npm install turing-wallet-provider@latest
 
 import { TuringProvider } from "turing-wallet-provider";
@@ -12,7 +12,7 @@ root.render(
 );
 ```
 
-```tsx
+```ts
 import { useTuringsWallet } from "turing-wallet-provider";
 
 const wallet = useTuringsWallet();
@@ -21,77 +21,50 @@ await wallet.connect();
 
 ## disconnect
 
-```tsx
+```ts
 const wallet = useTuringsWallet();
 await wallet.disconnect();
 ```
 
 ## isConnected
 
-```tsx
+```ts
 const wallet = useTuringsWallet();
 const ture/false = await wallet.isConnected();
 ```
 
 ## getPubKey
 
-```tsx
+```ts
 const wallet = useTuringsWallet();
 const { tbcPubKey } = await wallet.getPubKey(); //tbcPubKey为string类型
 ```
 
 ## getAddress
 
-```tsx
+```ts
 const wallet = useTuringsWallet();
 const { tbcAddress } = await wallet.getAddress(); //tbcAddress为string类型
 ```
 
 ## getBalance
 
-```tsx
+```ts
 const wallet = useTuringsWallet();
 const { tbc } = await wallet.getBalance(); //tbc为number类型，单位为tbc
 ```
 
 ## getInfo
 
-```tsx
+```ts
 const wallet = useTuringsWallet();
 const {name,platform,version} = await wallet.getInfo();
 {Turing,android,1.0.0}示例的返回值
 ```
 
-## getPaymentUtxos
-
-```tsx
-const wallet = useTuringsWallet();
-try {
-    const utxos = await wallet.getPaymentUtxos();
-    console.log(utxos);
-} catch (err) {
-    console.log(err);
-}
-
-[
-    {
-        satoshis: 205551
-        script: "76a914b681d8032b448405d44e82807fab2c8894eed57788ac"
-        txid: "c58e8b0dd25e56af0696b026c1961dccd0cab3fe42fb2f3ac934ebdc3accbb40"
-        vout: 0
-    },
-    {
-        satoshis: 19909
-        script: "76a914b681d8032b448405d44e82807fab2c8894eed57788ac"
-        txid: "4c52add57a2c9cda29501a810a1312eaee9423d28440a09acbf5d9d8d0467382"
-        vout: 0
-    }
-]//模拟的输出
-```
-
 ## signMessage
 
-```tsx
+```ts
 const wallet = useTuringsWallet();
 try{
     const { address, pubKey, sig, message } = await wallet.signMessage({ message: "hello world", encoding: "base64" });//encoding可为utf-8,base64,hex
@@ -108,10 +81,10 @@ const true/false = tbc.Message.verify(msg_buf,address,sig);
 
 ## encrypt
 
-```tsx
+```ts
 const wallet = useTuringsWallet();
 try {
-  const encryptedMessage = await wallet.encrypt(message);
+  const { encryptedMessage } = await wallet.encrypt({ message });
   if (encryptedMessage) {
     console.log(encryptedMessage);
   }
@@ -125,7 +98,7 @@ try {
 ```ts
 const wallet = useTuringsWallet();
 try {
-  const decryptedMessage = await wallet.decrypt(message);
+  const { decryptedMessage } = await wallet.decrypt({ message });
   if (decryptedMessage) {
     console.log(decryptedMessage);
   }
@@ -134,9 +107,73 @@ try {
 }
 ```
 
+## signTransaction
+
+```ts
+//使用示例
+const utxosA: tbc.Transaction.IUnspentOutput[] = [];
+const utxosB: tbc.Transaction.IUnspentOutput[] = [];
+const utxos_satoshis: number[][] = [[], []];
+const script_pubkeys: string[][] = [[], []];
+const txraws: string[] = [];
+const txs: tbc.Transaction[] = [];
+const tx0 = new tbc.Transaction()
+  .from(utxosA)
+  .to(address, 100000)
+  .change(address)
+  .fee(80);
+const tx1 = new tbc.Transaction()
+  .from(utxosB)
+  .to(address, 100000)
+  .change(address)
+  .fee(80);
+txraws.push(tx0.uncheckedSerialize(), tx1.uncheckedSerialize());
+for (let i = 0; i < utxosA.length; i++) {
+  utxos_satoshis[0].push(utxosA[i].satoshis);
+  script_pubkeys[0].push(utxosA[i].script);
+}
+for (let i = 0; i < utxosB.length; i++) {
+  utxos_satoshis[1].push(utxosB[i].satoshis);
+  script_pubkeys[1].push(utxosB[i].script);
+}
+const wallet = useTuringsWallet();
+const { sigs } = await wallet.signTransaction({
+  txraws,
+  utxos_satoshis,
+  script_pubkeys,
+});
+for (let i = 0; i < utxosA.length; i++) {
+  tx0.setInputScript({ inputIndex: i }, (tx) => {
+    const sig = sigs[0][i];
+    const sig_length = (sig.length / 2).toString(16);
+    const publicKey_length = (
+      publicKey.toBuffer().toString("hex").length / 2
+    ).toString(16);
+    return new tbc.Script(
+      sig_length + sig + publicKey_length + publicKey.toString()
+    );
+  });
+  txs.push(tx0);
+}
+for (let i = 0; i < utxosB.length; i++) {
+  tx1.setInputScript({ inputIndex: i }, (tx) => {
+    const sig = sigs[1][i]; // Use index 1 for the second transaction
+    const sig_length = (sig.length / 2).toString(16);
+    const publicKey_length = (
+      publicKey.toBuffer().toString("hex").length / 2
+    ).toString(16);
+    return new tbc.Script(
+      sig_length + sig + publicKey_length + publicKey.toString()
+    );
+  });
+  txs.push(tx1);
+}
+broadcastTXsraw(txs.map((tx) => ({ txHex: tx.uncheckedSerialize() })));
+```
+
 ## sendTransaction
 
-```tsx
+```ts
 interface FTData {
 ​ name:string;
  symbol :string;
