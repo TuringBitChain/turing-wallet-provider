@@ -62,7 +62,7 @@ export type SendTransactionResponse = {
 };
 
 export type SignTransaction = {
-  ttxraws: string[];
+  txraws: string[];
   utxos_satoshis: number[][];
   script_pubkeys: string[][];
 };
