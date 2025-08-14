@@ -319,7 +319,7 @@ const params = [{
     with_lock?:false //默认值为false，为true则创建带哈希锁的poolNFT
     pubKeyLock?:["pubkey1","pubkey2"];
     lpCostAddress?:"";//设置添加流动性扣款地址
-    lpCostTBC?:5;//设置添加流动性扣款TBC数量
+    lpCostAmount?:5;//设置添加流动性扣款TBC数量
     lpPlan?:1 //默认值为1
     domain?: "",
 }];
