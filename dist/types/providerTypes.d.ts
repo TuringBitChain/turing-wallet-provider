@@ -14,7 +14,7 @@ export type Info = {
   name: string;
   platform: string;
   version: string;
-}
+};
 
 export type TransactionFlag =
   | "P2PKH"
@@ -54,6 +54,8 @@ export type SendTransaction = {
   serviceProvider_flag?: string;
   lpPlan?: number;
   domain?: string;
+  isLockTime?: boolean;
+  locktime?: number;
 };
 
 export type SendTransactionResponse = {
@@ -115,8 +117,12 @@ export type TuringProviderType = {
   sendTransaction: (
     params: SendTransaction[]
   ) => Promise<SendTransactionResponse | undefined>;
-  signTransaction: (params: SignTransaction) => Promise<SignTransactionResponse | undefined>;
-  signMessage: (params: SignMessage) => Promise<SignMessageResponse | undefined>;
+  signTransaction: (
+    params: SignTransaction
+  ) => Promise<SignTransactionResponse | undefined>;
+  signMessage: (
+    params: SignMessage
+  ) => Promise<SignMessageResponse | undefined>;
   encrypt: (params: Encrypt) => Promise<EncryptResponse | undefined>;
   decrypt: (params: Decrypt) => Promise<DecryptResponse | undefined>;
 };

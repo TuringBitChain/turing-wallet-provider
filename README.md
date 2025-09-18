@@ -13,51 +13,51 @@ root.render(
 ```
 
 ```ts
-import { useTuringsWallet } from "turing-wallet-provider";
+import { useTuringWallet } from "turing-wallet-provider";
 
-const wallet = useTuringsWallet();
+const wallet = useTuringWallet();
 await wallet.connect();
 ```
 
 ## disconnect
 
 ```ts
-const wallet = useTuringsWallet();
+const wallet = useTuringWallet();
 await wallet.disconnect();
 ```
 
 ## isConnected
 
 ```ts
-const wallet = useTuringsWallet();
+const wallet = useTuringWallet();
 const ture/false = await wallet.isConnected();
 ```
 
 ## getPubKey
 
 ```ts
-const wallet = useTuringsWallet();
+const wallet = useTuringWallet();
 const { tbcPubKey } = await wallet.getPubKey(); //tbcPubKey为string类型
 ```
 
 ## getAddress
 
 ```ts
-const wallet = useTuringsWallet();
+const wallet = useTuringWallet();
 const { tbcAddress } = await wallet.getAddress(); //tbcAddress为string类型
 ```
 
 ## getBalance
 
 ```ts
-const wallet = useTuringsWallet();
+const wallet = useTuringWallet();
 const { tbc } = await wallet.getBalance(); //tbc为number类型，单位为tbc
 ```
 
 ## getInfo
 
 ```ts
-const wallet = useTuringsWallet();
+const wallet = useTuringWallet();
 const {name,platform,version} = await wallet.getInfo();
 {Turing,android,1.0.0}示例的返回值
 ```
@@ -65,7 +65,7 @@ const {name,platform,version} = await wallet.getInfo();
 ## signMessage
 
 ```ts
-const wallet = useTuringsWallet();
+const wallet = useTuringWallet();
 try{
     const { address, pubKey, sig, message } = await wallet.signMessage({ message: "hello world", encoding: "base64" });//encoding可为utf-8,base64,hex
 }catch(error){
@@ -82,7 +82,7 @@ const true/false = tbc.Message.verify(msg_buf,address,sig);
 ## encrypt
 
 ```ts
-const wallet = useTuringsWallet();
+const wallet = useTuringWallet();
 try {
   const { encryptedMessage } = await wallet.encrypt({ message });
   if (encryptedMessage) {
@@ -96,7 +96,7 @@ try {
 ## decrypt
 
 ```ts
-const wallet = useTuringsWallet();
+const wallet = useTuringWallet();
 try {
   const { decryptedMessage } = await wallet.decrypt({ message });
   if (decryptedMessage) {
@@ -136,7 +136,7 @@ for (let i = 0; i < utxosB.length; i++) {
   utxos_satoshis[1].push(utxosB[i].satoshis);
   script_pubkeys[1].push(utxosB[i].script);
 }
-const wallet = useTuringsWallet();
+const wallet = useTuringWallet();
 const { sigs } = await wallet.signTransaction({
   txraws,
   utxos_satoshis,
@@ -213,11 +213,13 @@ interface RequestParam = {
     lpCostAddress?: string;//设置添加流动性扣款地址
     lpCostAmount?: number;//设置添加流动性扣款TBC数量
     pubKeyLock?: string[];
-    poolNFT_version?: number; // 1或2 不提供默认为2
+    poolNFT_version?: number; // 废弃字段强制为2，若提供为别的值转为2
     serviceFeeRate?: number; // 0-100 poolNFT_version为2有效 不提供默认为25
     serverProvider_tag?:string; //poolNFT_version为2时为必需字段 poolNFT_version为1无效
-    lpPlan?:number //1或2 不提供默认为1 lp手续费方案, 方案1: LP 0.25%  swap服务商 0.09%  协议0.01%; 方案2: LP 0.05%  swap服务商 0.29%  协议0.01%
-    domain?:string // 设置构建及广播交易使用的节点和api服务 只支持https 不提供默认值是turingwallet.xyz 具体结构为https://${domain}/v1/tbc/main
+    lpPlan?:number; //1或2 不提供默认为1 lp手续费方案, 方案1: LP 0.25%  swap服务商 0.09%  协议0.01%; 方案2: LP 0.05%  swap服务商 0.29%  协议0.01%
+    domain?:string; // 设置构建及广播交易使用的节点和api服务 只支持https 不提供默认值是api.turingbitchain.io 具体结构为https://${domain}/api/tbc
+    isLockTime?: boolean;//是否具备锁仓功能
+    lockTime?: number;//锁仓至lockTime区块高度
 };
 
 const params = [param:RequestParam] //目前参数里只能放一个对象，有批量发送需求再扩展
@@ -313,14 +315,15 @@ const { txid } = await wallet.sendTransaction(params);
 const params = [{
     flag:"POOLNFT_MINT",
     ft_contract_address:"",
-    poolNFT_version?：2,
+    poolNFT_version?: 2,
     serverProvider_tag?:"",
     serviceFeeRate?:25, // poolNFT_version为2时此参数有效，默认为25
     with_lock?:false //默认值为false，为true则创建带哈希锁的poolNFT
     pubKeyLock?:["pubkey1","pubkey2"];
-    lpCostAddress?:"";//设置添加流动性扣款地址
-    lpCostAmount?:5;//设置添加流动性扣款TBC数量
+    lpCostAddress?:"",//设置添加流动性扣款地址
+    lpCostAmount?:5,//设置添加流动性扣款TBC数量
     lpPlan?:1 //默认值为1
+    isLockTime: false //是否具备锁仓功能 默认为false
     domain?: "",
 }];
 const { txid } = await wallet.sendTransaction(params);
@@ -335,10 +338,11 @@ const params = [{
     address:"",
     tbc_amount:30,
     ft_amount:1000,
-    poolNFT_version?：2,
+    poolNFT_version?: 2,
+    locktime?: 900000,锁仓至指定区块高度
     domain?: "",
 }];
-const { txid, rawtx } = await wallet.sendTransaction(params);
+const { txid } = await wallet.sendTransaction(params);
 ```
 
 ### POOLNFT_LP_INCREASE
@@ -349,10 +353,11 @@ const params = [{
     nft_contract_address:"",
     address:"",
     tbc_amount:3,
-    poolNFT_version?：2,
+    poolNFT_version?: 2,
+    locktime?: 900000,锁仓至指定区块高度
     domain?: "",
 }];
-const { txid, rawtx } = await wallet.sendTransaction(params);
+const { txid } = await wallet.sendTransaction(params);
 ```
 
 ### POOLNFT_LP_CONSUME
@@ -363,7 +368,7 @@ const params = [{
     nft_contract_address:"",
     address:"",
     ft_amount:100,
-    poolNFT_version?：2,
+    poolNFT_version?: 2,
     domain?: "",
 }];
 const { txid } = await wallet.sendTransaction(params);
@@ -377,8 +382,8 @@ const params = [{
     nft_contract_address:"",
     address:"",
     tbc_amount:10,
-    poolNFT_version?：2
-    lpPlan?:1 //默认值为1,
+    poolNFT_version?: 2,
+    lpPlan?:1, //默认值为1
     domain?: "",
 }];
 const { txid } = await wallet.sendTransaction(params);
@@ -392,7 +397,7 @@ const params = [{
     nft_contract_address:"",
     address:"",
     ft_amount:10,
-    poolNFT_version?：2
+    poolNFT_version?: 2,
     lpPlan?:1 //默认值为1,
     domain?: "",
 }];
@@ -405,7 +410,7 @@ const { txid } = await wallet.sendTransaction(params);
 const params = [{
     flag:"POOLNFT_MERGE",
     nft_contract_address:"",
-    poolNFT_version?：2,
+    poolNFT_version?: 2,
     merge_times?:1, //1-10次 默认为10次 不足10次会提前终止
     domain?: "",
 }];
@@ -418,7 +423,7 @@ const { txid } = await wallet.sendTransaction(params);
 const params = [{
     flag:"FTLP_MERGE",
     nft_contract_address:"",
-    poolNFT_version?：2,
+    poolNFT_version?: 2,
     domain?: "",
 }];
 const { txid } = await wallet.sendTransaction(params);
