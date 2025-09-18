@@ -318,12 +318,12 @@ const params = [{
     poolNFT_version?: 2,
     serverProvider_tag?:"",
     serviceFeeRate?:25, // poolNFT_version为2时此参数有效，默认为25
-    with_lock?:false //默认值为false，为true则创建带哈希锁的poolNFT
-    pubKeyLock?:["pubkey1","pubkey2"];
+    with_lock?:false, //默认值为false，为true则创建带哈希锁的poolNFT
+    pubKeyLock?:["pubkey1","pubkey2"],
     lpCostAddress?:"",//设置添加流动性扣款地址
     lpCostAmount?:5,//设置添加流动性扣款TBC数量
-    lpPlan?:1 //默认值为1
-    isLockTime: false //是否具备锁仓功能 默认为false
+    lpPlan?:1, //默认值为1
+    isLockTime?: false, //是否具备锁仓功能 默认为false
     domain?: "",
 }];
 const { txid } = await wallet.sendTransaction(params);
