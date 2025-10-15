@@ -233,7 +233,7 @@ const params = [
     flag: "P2PKH",
     satoshis: 1000,
     address: "",
-    domain: "",
+    domain?: "",
   },
 ];
 const { txid } = await wallet.sendTransaction(params);
@@ -246,7 +246,7 @@ const params = [
   {
     flag: "COLLECTION_CREATE",
     collection_data: "",
-    domain: "",
+    domain?: "",
   },
 ];
 const { txid } = await wallet.sendTransaction(params);
@@ -260,7 +260,7 @@ const params = [
     flag: "NFT_CREATE",
     nft_data: "",
     collection_id: "",
-    domain: "",
+    domain?: "",
   },
 ];
 const { txid } = await wallet.sendTransaction(params);
@@ -274,7 +274,7 @@ const params = [
     flag: "NFT_TRANSFER",
     nft_contract_address: "",
     address: "",
-    domain: "",
+    domain?: "",
   },
 ];
 const { txid } = await wallet.sendTransaction(params);
@@ -287,7 +287,7 @@ const params = [
   {
     flag: "FT_MINT",
     ft_data: "",
-    domain: "",
+    domain?: "",
   },
 ];
 const { txid } = await wallet.sendTransaction(params);
@@ -301,9 +301,9 @@ const params = [
     flag: "FT_TRANSFER",
     ft_contract_address: "",
     ft_amount: 0.1,
-    tbc_amount: 1, //同时转ft和tbc时候可提供参数
+    tbc_amount?: 1, //同时转ft和tbc时候可提供参数
     address: "",
-    domain: "",
+    domain?: "",
   },
 ];
 const { txid } = await wallet.sendTransaction(params);
@@ -312,20 +312,22 @@ const { txid } = await wallet.sendTransaction(params);
 ### POOLNFT_MINT
 
 ```ts
-const params = [{
-    flag:"POOLNFT_MINT",
-    ft_contract_address:"",
-    poolNFT_version?: 2,
-    serverProvider_tag?:"",
-    serviceFeeRate?:25, // poolNFT_version为2时此参数有效，默认为25
-    with_lock?:false, //默认值为false，为true则创建带哈希锁的poolNFT
-    pubKeyLock?:["pubkey1","pubkey2"],
-    lpCostAddress?:"",//设置添加流动性扣款地址
-    lpCostAmount?:5,//设置添加流动性扣款TBC数量
-    lpPlan?:1, //默认值为1
-    isLockTime?: false, //是否具备锁仓功能 默认为false
+const params = [
+  {
+    flag: "POOLNFT_MINT",
+    ft_contract_address: "",
+    poolNFT_version: 2,
+    serverProvider_tag: "",
+    serviceFeeRate: 25, // poolNFT_version为2时此参数有效，默认为25
+    with_lock: false, //默认值为false，为true则创建带哈希锁的poolNFT
+    pubKeyLock: ["pubkey1", "pubkey2"],
+    lpCostAddress: "", //设置添加流动性扣款地址
+    lpCostAmount: 5, //设置添加流动性扣款TBC数量
+    lpPlan: 1, //默认值为1
+    isLockTime: false, //是否具备锁仓功能 默认为false
     domain?: "",
-}];
+  },
+];
 const { txid } = await wallet.sendTransaction(params);
 ```
 
@@ -363,29 +365,33 @@ const { txid } = await wallet.sendTransaction(params);
 ### POOLNFT_LP_CONSUME
 
 ```ts
-const params = [{
-    flag:"POOLNFT_LP_CONSUME",
-    nft_contract_address:"",
-    address:"",
-    ft_amount:100,
-    poolNFT_version?: 2,
+const params = [
+  {
+    flag: "POOLNFT_LP_CONSUME",
+    nft_contract_address: "",
+    address: "",
+    ft_amount: 100,
+    poolNFT_version: 2,
     domain?: "",
-}];
+  },
+];
 const { txid } = await wallet.sendTransaction(params);
 ```
 
 ### POOLNFT_SWAP_TO_TOKEN
 
 ```ts
-const params = [{
-    flag:"POOLNFT_SWAP_TO_TOKEN",
-    nft_contract_address:"",
-    address:"",
-    tbc_amount:10,
-    poolNFT_version?: 2,
-    lpPlan?:1, //默认值为1
+const params = [
+  {
+    flag: "POOLNFT_SWAP_TO_TOKEN",
+    nft_contract_address: "",
+    address: "",
+    tbc_amount: 10,
+    poolNFT_version: 2,
+    lpPlan: 1, //默认值为1
     domain?: "",
-}];
+  },
+];
 const { txid } = await wallet.sendTransaction(params);
 ```
 
@@ -407,24 +413,28 @@ const { txid } = await wallet.sendTransaction(params);
 ### POOLNFT_MERGE
 
 ```ts
-const params = [{
-    flag:"POOLNFT_MERGE",
-    nft_contract_address:"",
-    poolNFT_version?: 2,
-    merge_times?:1, //1-10次 默认为10次 不足10次会提前终止
+const params = [
+  {
+    flag: "POOLNFT_MERGE",
+    nft_contract_address: "",
+    poolNFT_version: 2,
+    merge_times: 1, //1-10次 默认为10次 不足10次会提前终止
     domain?: "",
-}];
+  },
+];
 const { txid } = await wallet.sendTransaction(params);
 ```
 
 ### FTLP_MERGE
 
 ```ts
-const params = [{
-    flag:"FTLP_MERGE",
-    nft_contract_address:"",
-    poolNFT_version?: 2,
+const params = [
+  {
+    flag: "FTLP_MERGE",
+    nft_contract_address: "",
+    poolNFT_version: 2,
     domain?: "",
-}];
+  },
+];
 const { txid } = await wallet.sendTransaction(params);
 ```
