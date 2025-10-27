@@ -47,13 +47,6 @@ const wallet = useTuringWallet();
 const { tbcAddress } = await wallet.getAddress(); //tbcAddress为string类型
 ```
 
-## getBalance
-
-```ts
-const wallet = useTuringWallet();
-const { tbc } = await wallet.getBalance(); //tbc为number类型，单位为tbc
-```
-
 ## getInfo
 
 ```ts

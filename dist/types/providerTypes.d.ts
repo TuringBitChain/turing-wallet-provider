@@ -6,10 +6,6 @@ export type Address = {
   tbcAddress: string;
 };
 
-export type Balance = {
-  tbc: number;
-};
-
 export type Info = {
   name: string;
   platform: string;
@@ -112,7 +108,6 @@ export type TuringProviderType = {
   isConnected: () => Promise<boolean>;
   getPubKey: () => Promise<PubKey | undefined>;
   getAddress: () => Promise<Address | undefined>;
-  getBalance: () => Promise<Balance | undefined>;
   getInfo: () => Promise<Info | undefined>;
   sendTransaction: (
     params: SendTransaction[]
