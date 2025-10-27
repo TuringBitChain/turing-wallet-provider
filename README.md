@@ -67,7 +67,7 @@ const {name,platform,version} = await wallet.getInfo();
 ```ts
 const wallet = useTuringWallet();
 try{
-    const { address, pubKey, sig, message } = await wallet.signMessage({ message: "hello world", encoding: "base64" });//encoding可为utf-8,base64,hex
+    const { address, pubkey, sig, message } = await wallet.signMessage({ message: "hello world", encoding: "base64" });//encoding可为utf-8,base64,hex
 }catch(error){
     console.log(error);
 }
