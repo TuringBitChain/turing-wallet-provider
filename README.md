@@ -161,7 +161,7 @@ for (let i = 0; i < utxosB.length; i++) {
   });
   txs.push(tx1);
 }
-broadcastTXsraw(txs.map((tx) => ({ txHex: tx.uncheckedSerialize() })));
+broadcastTXsraw(txs.map((tx) => ({ txraw: tx.uncheckedSerialize() })));
 ```
 
 ## sendTransaction
