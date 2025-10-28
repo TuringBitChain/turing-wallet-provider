@@ -66,7 +66,7 @@ export type SignTransaction = {
 };
 
 export type SignTransactionResponse = {
-  sig?: string[][];
+  sigs?: string[][];
   error?: string;
 };
 
