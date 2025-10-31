@@ -210,7 +210,7 @@ interface RequestParam = {
     serviceFeeRate?: number; // 0-100 poolNFT_version为2有效 不提供默认为25
     serverProvider_tag?:string; //poolNFT_version为2时为必需字段 poolNFT_version为1无效
     lpPlan?:number; //1或2 不提供默认为1 lp手续费方案, 方案1: LP 0.25%  swap服务商 0.09%  协议0.01%; 方案2: LP 0.05%  swap服务商 0.29%  协议0.01%
-    domain?:string; // 设置构建及广播交易使用的节点和api服务 只支持https 不提供默认值是api.turingbitchain.io 具体结构为https://${domain}/api/tbc
+    domain?:string; // 设置构建及广播交易使用的节点和api服务 只支持https 不提供默认值是api.turingbitchain.io
     isLockTime?: boolean;//是否具备锁仓功能
     lockTime?: number;//锁仓至lockTime区块高度
 };
@@ -309,15 +309,15 @@ const params = [
   {
     flag: "POOLNFT_MINT",
     ft_contract_address: "",
-    poolNFT_version: 2,
+    poolNFT_version?: 2,
     serverProvider_tag: "",
     serviceFeeRate: 25, // poolNFT_version为2时此参数有效，默认为25
-    with_lock: false, //默认值为false，为true则创建带哈希锁的poolNFT
-    pubKeyLock: ["pubkey1", "pubkey2"],
-    lpCostAddress: "", //设置添加流动性扣款地址
-    lpCostAmount: 5, //设置添加流动性扣款TBC数量
-    lpPlan: 1, //默认值为1
-    isLockTime: false, //是否具备锁仓功能 默认为false
+    with_lock?: false, //默认值为false，为true则创建带哈希锁的poolNFT
+    pubKeyLock?: ["pubkey1", "pubkey2"],
+    lpCostAddress?: "", //设置添加流动性扣款地址
+    lpCostAmount?: 5, //设置添加流动性扣款TBC数量
+    lpPlan?: 1, //默认值为1
+    isLockTime?: false, //是否具备锁仓功能 默认为false
     domain?: "",
   },
 ];
@@ -364,7 +364,7 @@ const params = [
     nft_contract_address: "",
     address: "",
     ft_amount: 100,
-    poolNFT_version: 2,
+    poolNFT_version?: 2,
     domain?: "",
   },
 ];
@@ -380,8 +380,8 @@ const params = [
     nft_contract_address: "",
     address: "",
     tbc_amount: 10,
-    poolNFT_version: 2,
-    lpPlan: 1, //默认值为1
+    poolNFT_version?: 2,
+    lpPlan?: 1, //默认值为1
     domain?: "",
   },
 ];
@@ -410,8 +410,8 @@ const params = [
   {
     flag: "POOLNFT_MERGE",
     nft_contract_address: "",
-    poolNFT_version: 2,
-    merge_times: 1, //1-10次 默认为10次 不足10次会提前终止
+    poolNFT_version?: 2,
+    merge_times?: 1, //1-10次 默认为10次 不足10次会提前终止
     domain?: "",
   },
 ];
@@ -425,7 +425,7 @@ const params = [
   {
     flag: "FTLP_MERGE",
     nft_contract_address: "",
-    poolNFT_version: 2,
+    poolNFT_version?: 2,
     domain?: "",
   },
 ];
