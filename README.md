@@ -190,7 +190,7 @@ interface NFTData {
 };
 
 interface RequestParam = {
-    flag: "P2PKH" | "COLLECTION_CREATE" | "NFT_CREATE" | "NFT_TRANSFER" | "FT_MINT" | "FT_TRANSFER" | "POOLNFT_MINT" | "POOLNFT_INIT" | "POOLNFT_LP_INCREASE" |"POOLNFT_LP_CONSUME"| "POOLNFT_SWAP_TO_TOKEN" | "POOLNFT_SWAP_TO_TBC" | "POOLNFT_MERGE"|"FTLP_MERGE";
+    flag: "P2PKH" | "COLLECTION_CREATE" | "NFT_CREATE" | "NFT_TRANSFER" | "FT_MINT" | "FT_TRANSFER" | "POOLNFT_MINT" | "POOLNFT_INIT" | "POOLNFT_LP_INCREASE" |"POOLNFT_LP_CONSUME"| "POOLNFT_LP_BURN" | "POOLNFT_SWAP_TO_TOKEN" | "POOLNFT_SWAP_TO_TBC" | "POOLNFT_MERGE"|"FTLP_MERGE";
     addres?: string;//交易接收者地址
     satoshis?: number;//单位为satoshis
     collection_data?: string; //json格式传
@@ -371,6 +371,20 @@ const params = [
 const { txid } = await wallet.sendTransaction(params);
 ```
 
+### POOLNFT_LP_BURN
+
+```ts
+const params = [
+  {
+    flag: "POOLNFT_LP_BURN",
+    nft_contract_address: "",
+    poolNFT_version?: 2,//默认为2.且仅支持版本2
+    domain?: "",
+  },
+];
+const { txid } = await wallet.sendTransaction(params);
+```
+
 ### POOLNFT_SWAP_TO_TOKEN
 
 ```ts
@@ -411,7 +425,7 @@ const params = [
     flag: "POOLNFT_MERGE",
     nft_contract_address: "",
     poolNFT_version?: 2,
-    merge_times?: 1, //1-10次 默认为10次 不足10次会提前终止
+    merge_times?: 10, //1-10次 默认为10次 不足10次会提前终止
     domain?: "",
   },
 ];

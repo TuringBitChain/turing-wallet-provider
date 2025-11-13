@@ -23,10 +23,12 @@ export type TransactionFlag =
   | "POOLNFT_INIT"
   | "POOLNFT_LP_INCREASE"
   | "POOLNFT_LP_CONSUME"
+  | "POOLNFT_LP_BURN"
   | "POOLNFT_SWAP_TO_TOKEN"
   | "POOLNFT_SWAP_TO_TBC"
   | "POOLNFT_MERGE"
   | "FTLP_MERGE";
+
 
 export type SendTransaction = {
   flag: TransactionFlag;
