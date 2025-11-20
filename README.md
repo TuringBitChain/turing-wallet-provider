@@ -334,7 +334,7 @@ const params = [{
     tbc_amount:30,
     ft_amount:1000,
     poolNFT_version?: 2,
-    locktime?: 900000,锁仓至指定区块高度
+    lockTime?: 900000,锁仓至指定区块高度
     domain?: "",
 }];
 const { txid } = await wallet.sendTransaction(params);
@@ -349,7 +349,7 @@ const params = [{
     address:"",
     tbc_amount:3,
     poolNFT_version?: 2,
-    locktime?: 900000,锁仓至指定区块高度
+    lockTime?: 900000,锁仓至指定区块高度
     domain?: "",
 }];
 const { txid } = await wallet.sendTransaction(params);
