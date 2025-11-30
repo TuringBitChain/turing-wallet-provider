@@ -297,6 +297,7 @@ const params = [
   },
 ];
 const { txid } = await wallet.sendTransaction(params);
+//const { error } = await wallet.sendTransaction(params);构建或广播交易时出现错误
 ```
 
 ### FT_TRANSFER
@@ -338,6 +339,7 @@ const params = [
   },
 ];
 const { txid } = await wallet.sendTransaction(params);
+//const { error } = await wallet.sendTransaction(params);构建或广播交易时出现错误
 ```
 
 ### POOLNFT_INIT
@@ -469,7 +471,6 @@ const params = [
   },
 ];
 const { txid } = await wallet.sendTransaction(params);
-//const { txraw } = await wallet.sendTransaction(params);broadcastEnabled为false
 //const { error } = await wallet.sendTransaction(params);构建或广播交易时出现错误
 ```
 
@@ -486,6 +487,5 @@ const params = [
   },
 ];
 const { txid } = await wallet.sendTransaction(params);
-//const { txraw } = await wallet.sendTransaction(params);broadcastEnabled为false
 //const { error } = await wallet.sendTransaction(params);构建或广播交易时出现错误
 ```
