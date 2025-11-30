@@ -293,13 +293,10 @@ const params = [
   {
     flag: "FT_MINT",
     ft_data: "",
-    broadcastEnabled?:true,
     domain?: "",
   },
 ];
 const { txid } = await wallet.sendTransaction(params);
-//const { txraw } = await wallet.sendTransaction(params);broadcastEnabled为false
-//const { error } = await wallet.sendTransaction(params);构建或广播交易时出现错误
 ```
 
 ### FT_TRANSFER
@@ -337,13 +334,10 @@ const params = [
     lpCostAmount?: 5, //设置添加流动性扣款TBC数量
     lpPlan?: 1, //默认值为1
     isLockTime?: false, //是否具备锁仓功能 默认为false
-    broadcastEnabled?:true,
     domain?: "",
   },
 ];
 const { txid } = await wallet.sendTransaction(params);
-//const { txraw } = await wallet.sendTransaction(params);broadcastEnabled为false
-//const { error } = await wallet.sendTransaction(params);构建或广播交易时出现错误
 ```
 
 ### POOLNFT_INIT
@@ -471,7 +465,6 @@ const params = [
     nft_contract_address: "",
     poolNFT_version?: 2,
     merge_times?: 10, //1-10次 默认为10次 不足10次会提前终止
-    broadcastEnabled?:true,
     domain?: "",
   },
 ];
@@ -489,7 +482,6 @@ const params = [
     nft_contract_address: "",
     poolNFT_version?: 2,
     lockTime?: 900000, //用于手动设置解锁参数，设置为可解锁的最大高度。若不带此参数情况下若带有锁仓，会自动设置解锁参数为 (当前区块高度 - 2)
-    broadcastEnabled?:true,
     domain?: "",
   },
 ];
