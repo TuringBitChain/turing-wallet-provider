@@ -52,7 +52,7 @@ const { tbcAddress } = await wallet.getAddress(); //tbcAddress为string类型
 ```ts
 const wallet = useTuringWallet();
 const {name,platform,version} = await wallet.getInfo();
-{Turing,android,1.0.0}示例的返回值
+{Turing,android,1.0.0}//示例的返回值
 ```
 
 ## signMessage
@@ -213,6 +213,7 @@ interface RequestParam = {
     domain?:string; // 设置构建及广播交易使用的节点和api服务 只支持https 不提供默认值是api.turingbitchain.io
     isLockTime?: boolean;//是否具备锁仓功能
     lockTime?: number;//锁仓至lockTime区块高度
+    broadcastEnabled?:boolean;//决定是否通过钱包进行广播,默认为true,选择false则钱包返回txraw而不是txid
 };
 
 const params = [param:RequestParam] //目前参数里只能放一个对象，有批量发送需求再扩展
@@ -226,10 +227,13 @@ const params = [
     flag: "P2PKH",
     satoshis: 1000,
     address: "",
+    broadcastEnabled?:true,//默认为true
     domain?: "",
   },
 ];
-const { txid } = await wallet.sendTransaction(params);
+const { txid } = await wallet.sendTransaction(params);//broadcastEnabled为true
+//const { txraw } = await wallet.sendTransaction(params);broadcastEnabled为false
+//const { error } = await wallet.sendTransaction(params);构建或广播交易时出现错误
 ```
 
 ### COLLECTION_CREATE
@@ -239,10 +243,13 @@ const params = [
   {
     flag: "COLLECTION_CREATE",
     collection_data: "",
+    broadcastEnabled?:true,//默认为true
     domain?: "",
   },
 ];
 const { txid } = await wallet.sendTransaction(params);
+//const { txraw } = await wallet.sendTransaction(params);broadcastEnabled为false
+//const { error } = await wallet.sendTransaction(params);构建或广播交易时出现错误
 ```
 
 ### NFT_CREATE
@@ -253,10 +260,13 @@ const params = [
     flag: "NFT_CREATE",
     nft_data: "",
     collection_id: "",
+    broadcastEnabled?:true,
     domain?: "",
   },
 ];
 const { txid } = await wallet.sendTransaction(params);
+//const { txraw } = await wallet.sendTransaction(params);broadcastEnabled为false
+//const { error } = await wallet.sendTransaction(params);构建或广播交易时出现错误
 ```
 
 ### NFT_TRANSFER
@@ -267,10 +277,13 @@ const params = [
     flag: "NFT_TRANSFER",
     nft_contract_address: "",
     address: "",
+    broadcastEnabled?:true,
     domain?: "",
   },
 ];
 const { txid } = await wallet.sendTransaction(params);
+//const { txraw } = await wallet.sendTransaction(params);broadcastEnabled为false
+//const { error } = await wallet.sendTransaction(params);构建或广播交易时出现错误
 ```
 
 ### FT_MINT
@@ -280,10 +293,13 @@ const params = [
   {
     flag: "FT_MINT",
     ft_data: "",
+    broadcastEnabled?:true,
     domain?: "",
   },
 ];
 const { txid } = await wallet.sendTransaction(params);
+//const { txraw } = await wallet.sendTransaction(params);broadcastEnabled为false
+//const { error } = await wallet.sendTransaction(params);构建或广播交易时出现错误
 ```
 
 ### FT_TRANSFER
@@ -294,12 +310,15 @@ const params = [
     flag: "FT_TRANSFER",
     ft_contract_address: "",
     ft_amount: 0.1,
-    tbc_amount?: 1, //同时转ft和tbc时候可提供参数
     address: "",
+    tbc_amount?: 1, //同时转ft和tbc时候可提供参数
+    broadcastEnabled?:true,
     domain?: "",
   },
 ];
 const { txid } = await wallet.sendTransaction(params);
+//const { txraw } = await wallet.sendTransaction(params);broadcastEnabled为false
+//const { error } = await wallet.sendTransaction(params);构建或广播交易时出现错误
 ```
 
 ### POOLNFT_MINT
@@ -318,41 +337,54 @@ const params = [
     lpCostAmount?: 5, //设置添加流动性扣款TBC数量
     lpPlan?: 1, //默认值为1
     isLockTime?: false, //是否具备锁仓功能 默认为false
+    broadcastEnabled?:true,
     domain?: "",
   },
 ];
 const { txid } = await wallet.sendTransaction(params);
+//const { txraw } = await wallet.sendTransaction(params);broadcastEnabled为false
+//const { error } = await wallet.sendTransaction(params);构建或广播交易时出现错误
 ```
 
 ### POOLNFT_INIT
 
 ```ts
-const params = [{
-    flag:"POOLNFT_INIT",
-    nft_contract_address:"",
-    address:"",
-    tbc_amount:30,
-    ft_amount:1000,
+const params = [
+  {
+    flag: "POOLNFT_INIT",
+    nft_contract_address: "",
+    address: "",
+    tbc_amount: 30,
+    ft_amount: 1000,
     poolNFT_version?: 2,
-    lockTime?: 900000,锁仓至指定区块高度
+    lockTime?: 900000, //锁仓至指定区块高度
+    broadcastEnabled?:true,
     domain?: "",
-}];
+  },
+];
 const { txid } = await wallet.sendTransaction(params);
+//const { txraw } = await wallet.sendTransaction(params);broadcastEnabled为false
+//const { error } = await wallet.sendTransaction(params);构建或广播交易时出现错误
 ```
 
 ### POOLNFT_LP_INCREASE
 
 ```ts
-const params = [{
-    flag:"POOLNFT_LP_INCREASE",
-    nft_contract_address:"",
-    address:"",
-    tbc_amount:3,
+const params = [
+  {
+    flag: "POOLNFT_LP_INCREASE",
+    nft_contract_address: "",
+    address: "",
+    tbc_amount: 3,
     poolNFT_version?: 2,
-    lockTime?: 900000,锁仓至指定区块高度
+    lockTime?: 900000, //锁仓至指定区块高度
+    broadcastEnabled?:true,
     domain?: "",
-}];
+  },
+];
 const { txid } = await wallet.sendTransaction(params);
+//const { txraw } = await wallet.sendTransaction(params);broadcastEnabled为false
+//const { error } = await wallet.sendTransaction(params);构建或广播交易时出现错误
 ```
 
 ### POOLNFT_LP_CONSUME
@@ -365,10 +397,14 @@ const params = [
     address: "",
     ft_amount: 100,
     poolNFT_version?: 2,
+    lockTime?: 900000, //用于手动设置解锁参数，设置为可解锁的最大高度。若不带此参数情况下若带有锁仓，会自动设置解锁参数为 (当前区块高度 - 2)
+    broadcastEnabled?:true,
     domain?: "",
   },
 ];
 const { txid } = await wallet.sendTransaction(params);
+//const { txraw } = await wallet.sendTransaction(params);broadcastEnabled为false
+//const { error } = await wallet.sendTransaction(params);构建或广播交易时出现错误
 ```
 
 ### POOLNFT_LP_BURN
@@ -378,11 +414,14 @@ const params = [
   {
     flag: "POOLNFT_LP_BURN",
     nft_contract_address: "",
-    poolNFT_version?: 2,//默认为2.且仅支持版本2
+    poolNFT_version?: 2, //默认为2.且仅支持版本2
+    broadcastEnabled?:true,
     domain?: "",
   },
 ];
 const { txid } = await wallet.sendTransaction(params);
+//const { txraw } = await wallet.sendTransaction(params);broadcastEnabled为false
+//const { error } = await wallet.sendTransaction(params);构建或广播交易时出现错误
 ```
 
 ### POOLNFT_SWAP_TO_TOKEN
@@ -396,10 +435,13 @@ const params = [
     tbc_amount: 10,
     poolNFT_version?: 2,
     lpPlan?: 1, //默认值为1
+    broadcastEnabled?:true,
     domain?: "",
   },
 ];
 const { txid } = await wallet.sendTransaction(params);
+//const { txraw } = await wallet.sendTransaction(params);broadcastEnabled为false
+//const { error } = await wallet.sendTransaction(params);构建或广播交易时出现错误
 ```
 
 ### POOLNFT_SWAP_TO_TBC
@@ -412,9 +454,12 @@ const params = [{
     ft_amount:10,
     poolNFT_version?: 2,
     lpPlan?:1 //默认值为1,
+    broadcastEnabled?:true,
     domain?: "",
 }];
 const { txid } = await wallet.sendTransaction(params);
+//const { txraw } = await wallet.sendTransaction(params);broadcastEnabled为false
+//const { error } = await wallet.sendTransaction(params);构建或广播交易时出现错误
 ```
 
 ### POOLNFT_MERGE
@@ -426,10 +471,13 @@ const params = [
     nft_contract_address: "",
     poolNFT_version?: 2,
     merge_times?: 10, //1-10次 默认为10次 不足10次会提前终止
+    broadcastEnabled?:true,
     domain?: "",
   },
 ];
 const { txid } = await wallet.sendTransaction(params);
+//const { txraw } = await wallet.sendTransaction(params);broadcastEnabled为false
+//const { error } = await wallet.sendTransaction(params);构建或广播交易时出现错误
 ```
 
 ### FTLP_MERGE
@@ -440,8 +488,12 @@ const params = [
     flag: "FTLP_MERGE",
     nft_contract_address: "",
     poolNFT_version?: 2,
+    lockTime?: 900000, //用于手动设置解锁参数，设置为可解锁的最大高度。若不带此参数情况下若带有锁仓，会自动设置解锁参数为 (当前区块高度 - 2)
+    broadcastEnabled?:true,
     domain?: "",
   },
 ];
 const { txid } = await wallet.sendTransaction(params);
+//const { txraw } = await wallet.sendTransaction(params);broadcastEnabled为false
+//const { error } = await wallet.sendTransaction(params);构建或广播交易时出现错误
 ```

@@ -53,11 +53,13 @@ export type SendTransaction = {
   lpPlan?: number;
   domain?: string;
   isLockTime?: boolean;
-  locktime?: number;
+  lockTime?: number;
+  broadcastEnabled?:boolean;
 };
 
 export type SendTransactionResponse = {
   txid?: string;
+  txraw?: string;
   error?: string;
 };
 
