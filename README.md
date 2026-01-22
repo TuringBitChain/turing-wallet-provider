@@ -173,8 +173,8 @@ interface intput {
     script?: string;
     satoshis?: number;
     outputIndex: number;
-    unfinished_script_sig: string;
-    sig_position: number;
+    unfinishedScriptSig: string;
+    sigPosition: number;
 }
 
 interface output {
@@ -198,27 +198,27 @@ const sourceUtxos: intput[] = [
         outputIndex: 0,
         satoshis: 1000000000,
         script: tbc.Script.buildPublicKeyHashOut(address).toString(),
-        unfinished_script_sig: `${publicKey}`,
-        sig_position: 0
+        unfinishedScriptSig: `${publicKey}`,
+        sigPosition: 0
     }
 ]
 
 const inputs: intput[][] = [
     [
-        { outputIndex: 0, unfinished_script_sig: `${publicKey}`, sig_position: 0 },
-        { outputIndex: 1, unfinished_script_sig: `${publicKey}`, sig_position: 0 },
+        { outputIndex: 0, unfinishedScriptSig: `${publicKey}`, sigPosition: 0 },
+        { outputIndex: 1, unfinishedScriptSig: `${publicKey}`, sigPosition: 0 },
         {
             txId: "",
             outputIndex: 1,
             satoshis: 1000000000,
             script: tbc.Script.buildPublicKeyHashOut(address).toString(),
-            unfinished_script_sig: `${publicKey}`,
-            sig_position: 0
+            unfinishedScriptSig: `${publicKey}`,
+            sigPosition: 0
         }//和父子交易无关的输入
     ],
     [
-        { outputIndex: 0, unfinished_script_sig: `${publicKey}`, sig_position: 0 },
-        { outputIndex: 1, unfinished_script_sig: `${publicKey}`, sig_position: 0 }
+        { outputIndex: 0, unfinishedScriptSig: `${publicKey}`, sigPosition: 0 },
+        { outputIndex: 1, unfinishedScriptSig: `${publicKey}`, sigPosition: 0 }
     ]
 ];
 
