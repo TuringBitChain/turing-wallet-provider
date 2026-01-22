@@ -164,6 +164,74 @@ for (let i = 0; i < utxosB.length; i++) {
 broadcastTXsraw(txs.map((tx) => ({ txraw: tx.uncheckedSerialize() })));
 ```
 
+## signAssociatedTransaction
+
+```ts
+//使用示例
+interface intput {
+    txId?: string;
+    script?: string;
+    satoshis?: number;
+    outputIndex: number;
+    unfinished_script_sig: string;
+    sig_position: number;
+}
+
+interface output {
+    script: string;
+    satoshis: number;
+}
+
+interface SignAssociatedTransactionRequestData {
+	mode: 'sequential' | 'fromSource';//sequential:连续父子交易,fromSource:使用源头交易的所有输出 默认为sequential
+	sourceTxraw: string;
+	sourceUtxos: intput[];
+	inputs: intput[][];
+	outputs: output[][];
+	autoChange: boolean;//默认为true true则子交易最后一个输出由钱包设置为找零输出
+}
+
+//p2pkh示例参数
+const sourceUtxos: intput[] = [
+    {
+        txId: "",
+        outputIndex: 0,
+        satoshis: 1000000000,
+        script: tbc.Script.buildPublicKeyHashOut(address).toString(),
+        unfinished_script_sig: `${publicKey}`,
+        sig_position: 0
+    }
+]
+
+const inputs: intput[][] = [
+    [
+        { outputIndex: 0, unfinished_script_sig: `${publicKey}`, sig_position: 0 },
+        { outputIndex: 1, unfinished_script_sig: `${publicKey}`, sig_position: 0 },
+        {
+            txId: "",
+            outputIndex: 1,
+            satoshis: 1000000000,
+            script: tbc.Script.buildPublicKeyHashOut(address).toString(),
+            unfinished_script_sig: `${publicKey}`,
+            sig_position: 0
+        }//和父子交易无关的输入
+    ],
+    [
+        { outputIndex: 0, unfinished_script_sig: `${publicKey}`, sig_position: 0 },
+        { outputIndex: 1, unfinished_script_sig: `${publicKey}`, sig_position: 0 }
+    ]
+];
+
+const outputs: output[][] = [
+    [{ script: tbc.Script.buildPublicKeyHashOut(address).toString(), satoshis: 50000000 }, { script: tbc.Script.buildPublicKeyHashOut(address).toString(), satoshis: 50000000 }]
+
+    , [{ script: tbc.Script.buildPublicKeyHashOut(address).toString(), satoshis: 5000000 }, { script: tbc.Script.buildPublicKeyHashOut(address).toString(), satoshis: 5000000 }]
+]
+
+const wallet = useTuringWallet();
+const { txraws } = await wallet.signAssociatedTransaction(params);
+```
+
 ## sendTransaction
 
 ```ts
