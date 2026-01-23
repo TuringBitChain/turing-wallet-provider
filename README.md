@@ -173,12 +173,11 @@ interface Input {
     script?: string;
     satoshis?: number;
     outputIndex: number;
-    unfinishedScriptSig: string;
-    sigPosition: number;
+    unfinishedScriptSig: string;//asm 签名使用7369676e6174757265占位
 }
 
 interface Output {
-    script: string;
+    script: string;//asm或hex
     satoshis: number;
 }
 
@@ -198,15 +197,14 @@ const sourceUtxos: Input[] = [
         outputIndex: 0,
         satoshis: 1000000000,
         script: tbc.Script.buildPublicKeyHashOut(address).toString(),
-        unfinishedScriptSig: `${publicKey}`,
-        sigPosition: 0
+        unfinishedScriptSig: `7369676e6174757265 ${publicKey}`,
     }
 ]
 
 const inputs: Input[][] = [
     [
-        { outputIndex: 0, unfinishedScriptSig: `${publicKey}`, sigPosition: 0 },
-        { outputIndex: 1, unfinishedScriptSig: `${publicKey}`, sigPosition: 0 },
+        { outputIndex: 0, unfinishedScriptSig: `7369676e6174757265 ${publicKey}`},
+        { outputIndex: 1, unfinishedScriptSig: `7369676e6174757265 ${publicKey}`},
         {
             txId: "",
             outputIndex: 1,
@@ -217,13 +215,13 @@ const inputs: Input[][] = [
         }//和父子交易无关的输入
     ],
     [
-        { outputIndex: 0, unfinishedScriptSig: `${publicKey}`, sigPosition: 0 },
-        { outputIndex: 1, unfinishedScriptSig: `${publicKey}`, sigPosition: 0 }
+        { outputIndex: 0, unfinishedScriptSig: `7369676e6174757265 ${publicKey}`},
+        { outputIndex: 1, unfinishedScriptSig: `7369676e6174757265 ${publicKey}`}
     ]
 ];
 
 const outputs: Output[][] = [
-    [{ script: tbc.Script.buildPublicKeyHashOut(address).toString(), satoshis: 50000000 }, { script: tbc.Script.buildPublicKeyHashOut(address).toString(), satoshis: 50000000 }]
+    [{ script: tbc.Script.buildPublicKeyHashOut(address).toString(), satoshis: 5000000 }, { script: tbc.Script.buildPublicKeyHashOut(address).toString(), satoshis: 5000000 }]
 
     , [{ script: tbc.Script.buildPublicKeyHashOut(address).toString(), satoshis: 5000000 }, { script: tbc.Script.buildPublicKeyHashOut(address).toString(), satoshis: 5000000 }]
 ]
