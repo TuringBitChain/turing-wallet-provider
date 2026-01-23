@@ -210,8 +210,7 @@ const inputs: Input[][] = [
             outputIndex: 1,
             satoshis: 1000000000,
             script: tbc.Script.buildPublicKeyHashOut(address).toString(),
-            unfinishedScriptSig: `${publicKey}`,
-            sigPosition: 0
+            unfinishedScriptSig: `7369676e6174757265 ${publicKey}`
         }//和父子交易无关的输入
     ],
     [
