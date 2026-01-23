@@ -182,12 +182,12 @@ interface Output {
 }
 
 interface SignAssociatedTransactionRequestData {
-	mode: 'sequential' | 'fromSource';//sequential:连续父子交易,fromSource:使用源头交易的所有输出 默认为sequential
+	mode?: 'sequential' | 'fromSource';//sequential:连续父子交易,fromSource:使用源头交易的所有输出 默认为sequential
 	sourceTxraw: string;
 	sourceUtxos: Input[];
-	inputs: Input[][];
-	outputs: Output[][];
-	autoChange: boolean;//默认为true true则子交易最后一个输出由钱包设置为找零输出
+	inputs?: Input[][];
+	outputs?: Output[][];
+	autoChange?: boolean;//默认为true true则子交易最后一个输出由钱包设置为找零输出
 }
 
 //p2pkh示例参数
