@@ -168,7 +168,7 @@ broadcastTXsraw(txs.map((tx) => ({ txraw: tx.uncheckedSerialize() })));
 
 ```ts
 //使用示例
-interface intput {
+interface Input {
     txId?: string;
     script?: string;
     satoshis?: number;
@@ -177,7 +177,7 @@ interface intput {
     sigPosition: number;
 }
 
-interface output {
+interface Output {
     script: string;
     satoshis: number;
 }
@@ -185,14 +185,14 @@ interface output {
 interface SignAssociatedTransactionRequestData {
 	mode: 'sequential' | 'fromSource';//sequential:连续父子交易,fromSource:使用源头交易的所有输出 默认为sequential
 	sourceTxraw: string;
-	sourceUtxos: intput[];
-	inputs: intput[][];
-	outputs: output[][];
+	sourceUtxos: Input[];
+	inputs: Input[][];
+	outputs: Output[][];
 	autoChange: boolean;//默认为true true则子交易最后一个输出由钱包设置为找零输出
 }
 
 //p2pkh示例参数
-const sourceUtxos: intput[] = [
+const sourceUtxos: Input[] = [
     {
         txId: "",
         outputIndex: 0,
@@ -203,7 +203,7 @@ const sourceUtxos: intput[] = [
     }
 ]
 
-const inputs: intput[][] = [
+const inputs: Input[][] = [
     [
         { outputIndex: 0, unfinishedScriptSig: `${publicKey}`, sigPosition: 0 },
         { outputIndex: 1, unfinishedScriptSig: `${publicKey}`, sigPosition: 0 },
@@ -222,7 +222,7 @@ const inputs: intput[][] = [
     ]
 ];
 
-const outputs: output[][] = [
+const outputs: Output[][] = [
     [{ script: tbc.Script.buildPublicKeyHashOut(address).toString(), satoshis: 50000000 }, { script: tbc.Script.buildPublicKeyHashOut(address).toString(), satoshis: 50000000 }]
 
     , [{ script: tbc.Script.buildPublicKeyHashOut(address).toString(), satoshis: 5000000 }, { script: tbc.Script.buildPublicKeyHashOut(address).toString(), satoshis: 5000000 }]
