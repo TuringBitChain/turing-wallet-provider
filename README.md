@@ -278,7 +278,7 @@ interface NFTData {
 };
 
 interface RequestParam = {
-    flag: "P2PKH" | "COLLECTION_CREATE" | "NFT_CREATE" | "NFT_TRANSFER" | "FT_MINT" | "FT_TRANSFER" | "POOLNFT_MINT" | "POOLNFT_INIT" | "POOLNFT_LP_INCREASE" |"POOLNFT_LP_CONSUME"| "POOLNFT_LP_BURN" | "POOLNFT_SWAP_TO_TOKEN" | "POOLNFT_SWAP_TO_TBC" | "POOLNFT_MERGE"|"FTLP_MERGE";
+    flag: "P2PKH" | "COLLECTION_CREATE" | "NFT_CREATE" | "NFT_TRANSFER" | "FT_MINT" | "FT_TRANSFER" | "FT_MERGE" | "POOLNFT_MINT" | "POOLNFT_INIT" | "POOLNFT_LP_INCREASE" |"POOLNFT_LP_CONSUME"| "POOLNFT_LP_BURN" | "POOLNFT_SWAP_TO_TOKEN" | "POOLNFT_SWAP_TO_TBC" | "POOLNFT_MERGE"|"FTLP_MERGE";
     addres?: string;//交易接收者地址
     satoshis?: number;//单位为satoshis
     collection_data?: string; //json格式传
@@ -405,6 +405,20 @@ const params = [
 const { txid } = await wallet.sendTransaction(params);
 //const { txraw } = await wallet.sendTransaction(params);broadcastEnabled为false
 //const { error } = await wallet.sendTransaction(params);构建或广播交易时出现错误
+```
+
+### FT_MERGE
+
+```ts
+const params = [
+  {
+    flag: "FT_MERGE",
+    ft_contract_address: "",
+    domain?: "",
+  },
+];
+const { txid } = await wallet.sendTransaction(params);//txid为多个Merge交易的txid之间用逗号隔开
+//const { error } = await wallet.sendTransaction(params);广播交易时出现错误
 ```
 
 ### POOLNFT_MINT
@@ -558,8 +572,8 @@ const params = [
     domain?: "",
   },
 ];
-const { txid } = await wallet.sendTransaction(params);
-//const { error } = await wallet.sendTransaction(params);构建或广播交易时出现错误
+const { txid } = await wallet.sendTransaction(params);//txid为多个Merge交易的txid之间用逗号隔开
+//const { error } = await wallet.sendTransaction(params);广播交易时出现错误
 ```
 
 ### FTLP_MERGE
@@ -574,6 +588,6 @@ const params = [
     domain?: "",
   },
 ];
-const { txid } = await wallet.sendTransaction(params);
-//const { error } = await wallet.sendTransaction(params);构建或广播交易时出现错误
+const { txid } = await wallet.sendTransaction(params);//txid为多个Merge交易的txid之间用逗号隔开
+//const { error } = await wallet.sendTransaction(params);广播交易时出现错误
 ```

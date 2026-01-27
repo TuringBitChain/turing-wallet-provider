@@ -19,6 +19,7 @@ export type TransactionFlag =
   | "NFT_TRANSFER"
   | "FT_MINT"
   | "FT_TRANSFER"
+  | "FT_MERGE"
   | "POOLNFT_MINT"
   | "POOLNFT_INIT"
   | "POOLNFT_LP_INCREASE"
@@ -54,7 +55,7 @@ export type SendTransaction = {
   domain?: string;
   isLockTime?: boolean;
   lockTime?: number;
-  broadcastEnabled?:boolean;
+  broadcastEnabled?: boolean;
 };
 
 export type SendTransactionResponse = {
