@@ -143,7 +143,7 @@ for (let i = 0; i < utxosA.length; i++) {
       publicKey.toBuffer().toString("hex").length / 2
     ).toString(16);
     return new tbc.Script(
-      sig_length + sig + publicKey_length + publicKey.toString()
+      sig_length + sig + publicKey_length + publicKey.toString(),
     );
   });
   txs.push(tx0);
@@ -156,7 +156,7 @@ for (let i = 0; i < utxosB.length; i++) {
       publicKey.toBuffer().toString("hex").length / 2
     ).toString(16);
     return new tbc.Script(
-      sig_length + sig + publicKey_length + publicKey.toString()
+      sig_length + sig + publicKey_length + publicKey.toString(),
     );
   });
   txs.push(tx1);
@@ -169,61 +169,84 @@ broadcastTXsraw(txs.map((tx) => ({ txraw: tx.uncheckedSerialize() })));
 ```ts
 //使用示例
 interface Input {
-    txId?: string;
-    script?: string;
-    satoshis?: number;
-    outputIndex: number;
-    unfinishedScriptSig: string;//asm 签名使用7369676e6174757265占位
+  txId?: string;
+  script?: string;
+  satoshis?: number;
+  outputIndex: number;
+  scriptSigType: "p2pkh" | "tbc20"; //仅支持对于ft或p2pkh utxo的解锁
 }
 
 interface Output {
-    script: string;//asm或hex
-    satoshis: number;
+  script: string; //hex
+  satoshis: number;
 }
 
 interface SignAssociatedTransactionRequestData {
-	mode?: 'sequential' | 'fromSource';//sequential:连续父子交易,fromSource:使用源头交易的所有输出 默认为sequential
-	sourceTxraw: string;
-	sourceUtxos: Input[];
-	inputs?: Input[][];
-	outputs?: Output[][];
-	autoChange?: boolean;//默认为true true则子交易最后一个输出由钱包设置为找零输出
+  sourceTxraw: string;
+  sourceUtxos: Input[];
+  inputs?: Input[][];
+  outputs?: Output[][];
 }
 
-//p2pkh示例参数
-const sourceUtxos: Input[] = [
-    {
-        txId: "",
-        outputIndex: 0,
-        satoshis: 1000000000,
-        script: tbc.Script.buildPublicKeyHashOut(address).toString(),
-        unfinishedScriptSig: `7369676e6174757265 ${publicKey}`,
-    }
-]
-
-const inputs: Input[][] = [
-    [
-        { outputIndex: 0, unfinishedScriptSig: `7369676e6174757265 ${publicKey}`},
-        { outputIndex: 1, unfinishedScriptSig: `7369676e6174757265 ${publicKey}`},
-        {
-            txId: "",
-            outputIndex: 1,
-            satoshis: 1000000000,
-            script: tbc.Script.buildPublicKeyHashOut(address).toString(),
-            unfinishedScriptSig: `7369676e6174757265 ${publicKey}`
-        }//和父子交易无关的输入
-    ],
-    [
-        { outputIndex: 0, unfinishedScriptSig: `7369676e6174757265 ${publicKey}`},
-        { outputIndex: 1, unfinishedScriptSig: `7369676e6174757265 ${publicKey}`}
-    ]
+//ft转移示例参数
+const sourceUtxos: intput[] = [
+  {
+    txId: "",
+    outputIndex: 0,
+    satoshis: 500,
+    script: ftcode,
+    scriptSigType: "tbc20",
+  },
+  {
+    txId: "",
+    outputIndex: 2,
+    satoshis: 10000,
+    script: p2pkh,
+    scriptSigType: "p2pkh",
+  },
 ];
 
-const outputs: Output[][] = [
-    [{ script: tbc.Script.buildPublicKeyHashOut(address).toString(), satoshis: 5000000 }, { script: tbc.Script.buildPublicKeyHashOut(address).toString(), satoshis: 5000000 }]
+const inputs: intput[][] = [
+  [
+    { outputIndex: 0, scriptSigType: "tbc20" },
+    { outputIndex: 2, scriptSigType: "p2pkh" },
+  ],
+  [
+    { outputIndex: 0, scriptSigType: "tbc20" },
+    { outputIndex: 2, scriptSigType: "p2pkh" },
+  ],
+];
 
-    , [{ script: tbc.Script.buildPublicKeyHashOut(address).toString(), satoshis: 5000000 }, { script: tbc.Script.buildPublicKeyHashOut(address).toString(), satoshis: 5000000 }]
-]
+const outputs: output[][] = [
+  [
+    {
+      script: ftcode,
+      satoshis: 500,
+    },
+    {
+      script: fttape,
+      satoshis: 0,
+    },
+    {
+      script: p2pkh,
+      satoshis: 8000,
+    },
+  ],
+  [
+    {
+      script: ftcode,
+      satoshis: 500,
+    },
+    {
+      script: fttape,
+      satoshis: 0,
+    },
+    {
+      script: p2pkh,
+      satoshis: 6000,
+    },
+  ],
+];
 
 const wallet = useTuringWallet();
 const { txraws } = await wallet.signAssociatedTransaction(params);
