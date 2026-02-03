@@ -106,6 +106,53 @@ export type DecryptResponse = {
   error?: string;
 };
 
+export type Input = {
+  txId?: string;
+  script?: string;
+  satoshis?: number;
+  outputIndex: number;
+  scriptSigType: "p2pkh" | "tbc20";
+};
+
+export type Output = {
+  script: string;
+  satoshis: number;
+};
+
+export type SignAssociatedTransaction = {
+  sourceTxraw: string;
+  sourceUtxos: Input[];
+  inputs?: Input[][];
+  outputs?: Output[][];
+};
+
+export type SignAssociatedTransactionResponse = {
+  txraws?: string[];
+  error?: string;
+};
+
+export type BatchRequestMethod =
+  | "sendTransaction"
+  | "signMessage"
+  | "signTransaction"
+  | "signAssociatedTransaction"
+  | "encrypt"
+  | "decrypt";
+
+export type BatchRequest = {
+  method: BatchRequestMethod;
+  params: SendTransaction | SignMessage | SignTransaction | SignAssociatedTransaction | Encrypt | Decrypt;
+};
+
+export type BatchResponse = Array<
+  | SendTransactionResponse
+  | SignMessageResponse
+  | SignTransactionResponse
+  | SignAssociatedTransactionResponse
+  | EncryptResponse
+  | DecryptResponse
+>;
+
 export type TuringProviderType = {
   isReady: boolean;
   connect: () => Promise<string | undefined>;
@@ -125,4 +172,8 @@ export type TuringProviderType = {
   ) => Promise<SignMessageResponse | undefined>;
   encrypt: (params: Encrypt) => Promise<EncryptResponse | undefined>;
   decrypt: (params: Decrypt) => Promise<DecryptResponse | undefined>;
+  signAssociatedTransaction: (
+    params: SignAssociatedTransaction
+  ) => Promise<SignAssociatedTransactionResponse | undefined>;
+  sendBatchRequest: (requests: BatchRequest[]) => Promise<BatchResponse | undefined>;
 };

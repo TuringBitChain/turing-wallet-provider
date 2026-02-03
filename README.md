@@ -1,5 +1,7 @@
 # connect
 
+> **注意**: 此包仅适用于 React 框架。其他框架请参考 [docs.turingwallet.xyz](https://docs.turingwallet.xyz)
+
 ```ts
 npm install turing-wallet-provider@latest
 
@@ -590,4 +592,123 @@ const params = [
 ];
 const { txid } = await wallet.sendTransaction(params);//txid为多个Merge交易的txid之间用逗号隔开
 //const { error } = await wallet.sendTransaction(params);广播交易时出现错误
+```
+
+## sendBatchRequest
+
+批量请求功能支持一次性提交多个独立的请求，每个请求独立执行，一个请求失败不会影响其他请求的执行。
+
+**限制：** 单次批量请求最多支持 5 个请求。
+
+### 支持的方法
+
+- `sendTransaction` - 发送交易
+- `signMessage` - 签名消息
+- `signTransaction` - 签名交易
+- `signAssociatedTransaction` - 签名关联交易
+- `encrypt` - 加密
+- `decrypt` - 解密
+
+### 使用示例
+
+```ts
+import { useTuringWallet } from "turing-wallet-provider";
+
+const wallet = useTuringWallet();
+
+// 批量请求示例
+const requests = [
+  {
+    method: "sendTransaction",
+    params: {
+      flag: "P2PKH",
+      address: "recipient_address",
+      satoshis: 10000,
+      broadcastEnabled: true,
+    },
+  },
+  {
+    method: "signMessage",
+    params: {
+      message: "Hello World",
+      encoding: "utf8",
+    },
+  },
+  {
+    method: "encrypt",
+    params: {
+      message: "Secret message",
+    },
+  },
+];
+
+const results = await wallet.sendBatchRequest(requests);
+// 返回结果数组，每个元素对应一个请求的结果
+```
+
+### 批量转账示例
+
+```ts
+const batchTransfer = [
+  {
+    method: "sendTransaction",
+    params: {
+      flag: "P2PKH",
+      address: "address1",
+      satoshis: 10000,
+      broadcastEnabled: true,
+    },
+  },
+  {
+    method: "sendTransaction",
+    params: {
+      flag: "P2PKH",
+      address: "address2",
+      satoshis: 20000,
+      broadcastEnabled: true,
+    },
+  },
+];
+
+const results = await wallet.sendBatchRequest(batchTransfer);
+
+// 检查结果
+results.forEach((result, index) => {
+  if (result.error) {
+    console.error(`Request ${index + 1} failed:`, result.error);
+  } else {
+    console.log(`Request ${index + 1} success:`, result.txid);
+  }
+});
+```
+
+### 混合操作示例
+
+```ts
+const mixedOperations = [
+  {
+    method: "signMessage",
+    params: {
+      message: "Proof of ownership",
+      encoding: "utf8",
+    },
+  },
+  {
+    method: "sendTransaction",
+    params: {
+      flag: "P2PKH",
+      address: "recipient",
+      satoshis: 50000,
+      broadcastEnabled: true,
+    },
+  },
+  {
+    method: "encrypt",
+    params: {
+      message: "Sensitive data",
+    },
+  },
+];
+
+const results = await wallet.sendBatchRequest(mixedOperations);
 ```
