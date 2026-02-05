@@ -386,10 +386,12 @@ const params = [
   {
     flag: "FT_MINT",
     ft_data: "",
+    broadcastEnabled?:true,
     domain?: "",
   },
 ];
 const { txid } = await wallet.sendTransaction(params);
+//const { txraw } = await wallet.sendTransaction(params);broadcastEnabled为false 这里返回的txraw有两个，用逗号隔开，需批量广播，保证前面的txraw先广播
 //const { error } = await wallet.sendTransaction(params);构建或广播交易时出现错误
 ```
 
@@ -442,10 +444,12 @@ const params = [
     lpCostAmount?: 5, //设置添加流动性扣款TBC数量
     lpPlan?: 1, //默认值为1
     isLockTime?: false, //是否具备锁仓功能 默认为false
+    broadcastEnabled?:true,
     domain?: "",
   },
 ];
 const { txid } = await wallet.sendTransaction(params);
+//const { txraw } = await wallet.sendTransaction(params);broadcastEnabled为false 这里返回的txraw有两个，用逗号隔开，需批量广播，保证前面的txraw先广播
 //const { error } = await wallet.sendTransaction(params);构建或广播交易时出现错误
 ```
 
