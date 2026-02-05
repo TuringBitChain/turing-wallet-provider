@@ -172,17 +172,17 @@ broadcastTXsraw(txs.map((tx) => ({ txraw: tx.uncheckedSerialize() })));
 //使用示例
 interface Input {
   txId?: string;
-  script?: string;
+  script?: string; //仅支持hex类型，不支持asm
   satoshis?: number;
   outputIndex: number;
   scriptSigType: "p2pkh" | "tbc20" | "tbc20_contract" | "other";
-  unfinishedScriptSig?: string; // 对于"other"类型，用于提供自定义脚本(不包含交易数据的锁定脚本）模板，仅支持hex类型，签名部分用097369676e6174757265替代，09为7369676e6174757265长度
+  unfinishedScriptSig?: string; // 对于"other"类型，用于提供自定义脚本(不包含交易数据的锁定脚本）模板，仅支持hex类型，不支持asm。签名部分用097369676e6174757265替代，09为7369676e6174757265长度
   ftVersion?: 1 | 2; // 对于"tbc20_contract"类型，FT版本(1或2)
   contractTxId?: string; // 对于"tbc20_contract"类型，合约交易ID
 }
 
 interface Output {
-  script: string; //hex
+  script: string; //仅支持hex类型，不支持asm
   satoshis: number;
 }
 
