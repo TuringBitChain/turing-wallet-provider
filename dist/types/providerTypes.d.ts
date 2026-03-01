@@ -3,8 +3,13 @@ export type PubKey = {
 };
 
 export type Address = {
-  tbcAddress: string;
+  tbcAddress?: string;
+  btcAddress?: string;
+  ethAddress?: string;
+  bnbAddress?: string;
 };
+
+export type ConnectResponse = Address;
 
 export type Info = {
   name: string;
@@ -156,9 +161,27 @@ export type BatchResponse = Array<
   | DecryptResponse
 >;
 
+export type EvmSendTransaction = {
+  chainId: number;
+  contractAddress?: string;
+  toAddress: string;
+  amount: string;
+  broadcastEnabled?: boolean;
+};
+
+export type EvmSendTransactionResponse = {
+  txid?: string;
+  txraw?: string;
+  error?: string;
+};
+
+export type EvmProvider = {
+  sendTransaction: (params: EvmSendTransaction) => Promise<EvmSendTransactionResponse | undefined>;
+};
+
 export type TuringProviderType = {
   isReady: boolean;
-  connect: () => Promise<string | undefined>;
+  connect: () => Promise<ConnectResponse | undefined>;
   disconnect: () => Promise<boolean>;
   isConnected: () => Promise<boolean>;
   getPubKey: () => Promise<PubKey | undefined>;
@@ -179,4 +202,5 @@ export type TuringProviderType = {
     params: SignAssociatedTransaction
   ) => Promise<SignAssociatedTransactionResponse | undefined>;
   sendBatchRequest: (requests: BatchRequest[]) => Promise<BatchResponse | undefined>;
+  evm: EvmProvider;
 };

@@ -18,21 +18,25 @@ root.render(
 import { useTuringWallet } from "turing-wallet-provider";
 
 const wallet = useTuringWallet();
-await wallet.connect();
+const addresses = await wallet.connect(); 
+// 返回地址对象,根据账户类型不同返回不同字段:
+// BVM账户: { tbcAddress, btcAddress }
+// EVM账户: { ethAddress, bnbAddress }
+// 全部账户: { tbcAddress, btcAddress, ethAddress, bnbAddress }
 ```
 
 ## disconnect
 
 ```ts
 const wallet = useTuringWallet();
-await wallet.disconnect();
+const result = await wallet.disconnect(); // 返回 true/false
 ```
 
 ## isConnected
 
 ```ts
 const wallet = useTuringWallet();
-const ture/false = await wallet.isConnected();
+const result = await wallet.isConnected(); // 返回 true/false
 ```
 
 ## getPubKey
@@ -46,7 +50,11 @@ const { tbcPubKey } = await wallet.getPubKey(); //tbcPubKey为string类型
 
 ```ts
 const wallet = useTuringWallet();
-const { tbcAddress } = await wallet.getAddress(); //tbcAddress为string类型
+const addresses = await wallet.getAddress(); 
+// 返回地址对象,根据账户类型不同返回不同字段:
+// BVM账户: { tbcAddress, btcAddress }
+// EVM账户: { ethAddress, bnbAddress }
+// 全部账户: { tbcAddress, btcAddress, ethAddress, bnbAddress }
 ```
 
 ## getInfo
@@ -718,4 +726,108 @@ const mixedOperations = [
 ];
 
 const results = await wallet.sendBatchRequest(mixedOperations);
+```
+
+## evm.sendTransaction
+
+通过 `evm` 对象发送 EVM 链上的交易,支持原生币和 ERC20 标准代币转账。
+
+> **当前支持范围:**
+>
+> - 支持链: 以太坊主网(ETH)、BSC 主网(BNB)
+> - 支持代币: USDT、USDC
+
+### 参数说明
+
+```ts
+interface EvmSendTransaction {
+  chainId: number; // EVM 链 ID: 1(以太坊主网) 或 56(BSC主网)
+  contractAddress?: string; // ERC20 合约地址,如果为空则转账原生币(ETH/BNB)
+  toAddress: string; // 接收地址
+  amount: string; // 转账金额,字符串格式,单位为 token 的最小单位
+  broadcastEnabled?: boolean; // 是否广播交易,默认为 true
+}
+
+interface EvmSendTransactionResponse {
+  txid?: string; // 交易哈希(广播成功时返回)
+  txraw?: string; // 交易原始数据(broadcastEnabled为false时返回)
+  error?: string; // 错误信息
+}
+```
+
+### 支持的链和代币
+
+| 链         | chainId | 原生币 | USDT 合约地址                              | USDC 合约地址                              |
+| ---------- | ------- | ------ | ------------------------------------------ | ------------------------------------------ |
+| 以太坊主网 | 1       | ETH    | 0xdAC17F958D2ee523a2206206994597C13D831ec7 | 0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48 |
+| BSC 主网   | 56      | BNB    | 0x55d398326f99059fF775485246999027B3197955 | 0x8AC76a51cc950d9822D68b83fE1Ad97B32Cd580d |
+
+### 使用示例
+
+#### 转账原生币
+
+```ts
+const wallet = useTuringWallet();
+
+// 以太坊转账 ETH
+const result = await wallet.evm.sendTransaction({
+  chainId: 1,
+  toAddress: "0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb",
+  amount: "1000000000000000000", // 1 ETH (18位小数)
+  broadcastEnabled: true,
+});
+
+if (result.txid) {
+  console.log("交易哈希:", result.txid);
+} else if (result.error) {
+  console.error("交易失败:", result.error);
+}
+```
+
+#### 转账 ERC20 代币
+
+```ts
+const wallet = useTuringWallet();
+
+// BSC 上转账 USDT
+const result = await wallet.evm.sendTransaction({
+  chainId: 56,
+  contractAddress: "0x55d398326f99059fF775485246999027B3197955", // BSC USDT 合约
+  toAddress: "0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb",
+  amount: "1000000000000000000", // 1 USDT (18位小数)
+  broadcastEnabled: true,
+});
+
+// 以太坊主网转账 USDC
+const result2 = await wallet.evm.sendTransaction({
+  chainId: 1,
+  contractAddress: "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48", // ETH USDC 合约
+  toAddress: "0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb",
+  amount: "1000000", // 1 USDC (6位小数)
+  broadcastEnabled: true,
+});
+
+if (result.txid) {
+  console.log("交易哈希:", result.txid);
+} else if (result.error) {
+  console.error("交易失败:", result.error);
+}
+```
+
+#### 不广播,仅返回签名交易
+
+```ts
+const wallet = useTuringWallet();
+
+const result = await wallet.evm.sendTransaction({
+  chainId: 1,
+  toAddress: "0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb",
+  amount: "1000000000000000000",
+  broadcastEnabled: false, // 不广播
+});
+
+if (result.txraw) {
+  console.log("交易原始数据:", result.txraw);
+  // 可以自行广播这个交易
+}
 ```
