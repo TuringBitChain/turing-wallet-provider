@@ -179,6 +179,50 @@ export type EvmProvider = {
   sendTransaction: (params: EvmSendTransaction) => Promise<EvmSendTransactionResponse | undefined>;
 };
 
+export type BtcSendTransaction = {
+  toAddress: string;
+  amount: string;
+  broadcastEnabled?: boolean;
+};
+
+export type BtcSendTransactionResponse = {
+  txid?: string;
+  txraw?: string;
+  error?: string;
+};
+
+export type BtcSigHashType = "legacy" | "segwit_v0" | "taproot";
+
+export type BtcSignTransaction = {
+  txHex: string;
+  type: BtcSigHashType;
+  prevOutScriptsHex: string[];
+  values?: number[];
+  leafHashesHex?: (string | undefined)[];
+};
+
+export type BtcSignTransactionResponse = {
+  sigs?: string[];
+  error?: string;
+};
+
+export type BtcBatchRequestMethod = "sendTransaction" | "signTransaction";
+
+export type BtcBatchRequest = {
+  method: BtcBatchRequestMethod;
+  params: BtcSendTransaction | BtcSignTransaction;
+};
+
+export type BtcBatchResponse = Array<
+  BtcSendTransactionResponse | BtcSignTransactionResponse
+>;
+
+export type BtcProvider = {
+  sendTransaction: (params: BtcSendTransaction) => Promise<BtcSendTransactionResponse | undefined>;
+  signTransaction: (params: BtcSignTransaction) => Promise<BtcSignTransactionResponse | undefined>;
+  sendBatchRequest: (requests: BtcBatchRequest[]) => Promise<BtcBatchResponse | undefined>;
+};
+
 export type TuringProviderType = {
   isReady: boolean;
   connect: () => Promise<ConnectResponse | undefined>;
@@ -203,4 +247,5 @@ export type TuringProviderType = {
   ) => Promise<SignAssociatedTransactionResponse | undefined>;
   sendBatchRequest: (requests: BatchRequest[]) => Promise<BatchResponse | undefined>;
   evm: EvmProvider;
+  btc: BtcProvider;
 };

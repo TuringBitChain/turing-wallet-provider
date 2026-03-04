@@ -831,3 +831,212 @@ if (result.txraw) {
   // 可以自行广播这个交易
 }
 ```
+
+## btc.sendTransaction
+
+通过 `btc` 对象发送 BTC 链上的交易。
+
+### 参数说明
+
+```ts
+interface BtcSendTransaction {
+  toAddress: string; // 接收地址
+  amount: string; // 转账金额,字符串格式,单位为 satoshis
+  broadcastEnabled?: boolean; // 是否广播交易,默认为 true
+}
+
+interface BtcSendTransactionResponse {
+  txid?: string; // 交易哈希(广播成功时返回)
+  txraw?: string; // 交易原始数据(broadcastEnabled为false时返回)
+  error?: string; // 错误信息
+}
+```
+
+### 使用示例
+
+#### 转账 BTC
+
+```ts
+const wallet = useTuringWallet();
+
+const result = await wallet.btc.sendTransaction({
+  toAddress: "bc1qxyz...",
+  amount: "100000", // 100000 satoshis
+  broadcastEnabled: true,
+});
+
+if (result.txid) {
+  console.log("交易哈希:", result.txid);
+} else if (result.error) {
+  console.error("交易失败:", result.error);
+}
+```
+
+#### 不广播,仅返回签名交易
+
+```ts
+const wallet = useTuringWallet();
+
+const result = await wallet.btc.sendTransaction({
+  toAddress: "bc1qxyz...",
+  amount: "100000",
+  broadcastEnabled: false,
+});
+
+if (result.txraw) {
+  console.log("交易原始数据:", result.txraw);
+}
+```
+
+## btc.signTransaction
+
+通过 `btc` 对象对单个 BTC 裸交易进行签名,支持 legacy、segwit_v0、taproot 三种签名类型。taproot 类型下通过 `leafHashesHex` 区分 key path 和 script path:对应输入为 `undefined` 则走 key path,有值则走 script path。
+
+### 参数说明
+
+```ts
+type BtcSigHashType = "legacy" | "segwit_v0" | "taproot";
+
+interface BtcSignTransaction {
+  txHex: string; // 裸交易 hex
+  type: BtcSigHashType; // 签名哈希类型
+  prevOutScriptsHex: string[]; // 每个输入对应的前置输出脚本 hex
+  values?: number[]; // 每个输入对应的金额(satoshis),segwit_v0/taproot 必填
+  leafHashesHex?: (string | undefined)[]; // 每个输入对应的叶子哈希,仅 taproot 类型使用,undefined 表示 key path,有值表示 script path
+}
+
+interface BtcSignTransactionResponse {
+  sigs?: string[]; // 每个输入对应的签名 hex
+  error?: string; // 错误信息
+}
+```
+
+### 使用示例
+
+#### Legacy (P2PKH) 签名
+
+```ts
+const wallet = useTuringWallet();
+
+const result = await wallet.btc.signTransaction({
+  txHex: "0200000001...",
+  type: "legacy",
+  prevOutScriptsHex: ["76a914...88ac"],
+});
+
+if (result.sigs) {
+  console.log("签名列表:", result.sigs);
+} else if (result.error) {
+  console.error("签名失败:", result.error);
+}
+```
+
+#### SegWit V0 (P2WPKH) 签名
+
+```ts
+const wallet = useTuringWallet();
+
+const result = await wallet.btc.signTransaction({
+  txHex: "0200000001...",
+  type: "segwit_v0",
+  prevOutScriptsHex: ["76a914...88ac"],
+  values: [100000],
+});
+
+if (result.sigs) {
+  console.log("签名列表:", result.sigs);
+}
+```
+
+#### Taproot Key Path 签名
+
+```ts
+const wallet = useTuringWallet();
+
+const result = await wallet.btc.signTransaction({
+  txHex: "0200000001...",
+  type: "taproot",
+  prevOutScriptsHex: ["5120..."],
+  values: [100000],
+  // leafHashesHex 不传或对应位置为 undefined,走 key path
+});
+
+if (result.sigs) {
+  console.log("签名列表:", result.sigs);
+}
+```
+
+#### Taproot Script Path 签名
+
+```ts
+const wallet = useTuringWallet();
+
+const result = await wallet.btc.signTransaction({
+  txHex: "0200000001...",
+  type: "taproot",
+  prevOutScriptsHex: ["5120..."],
+  values: [100000],
+  leafHashesHex: ["ab12cd34..."], // 对应输入有 leafHash,走 script path
+});
+
+if (result.sigs) {
+  console.log("签名列表:", result.sigs);
+}
+```
+
+## btc.sendBatchRequest
+
+通过 `btc` 对象批量提交 BTC 相关请求,每个请求独立执行,一个失败不影响其他请求。
+
+### 支持的方法
+
+- `sendTransaction` - 发送交易
+- `signTransaction` - 签名交易
+
+### 参数说明
+
+```ts
+type BtcBatchRequestMethod = "sendTransaction" | "signTransaction";
+
+interface BtcBatchRequest {
+  method: BtcBatchRequestMethod;
+  params: BtcSendTransaction | BtcSignTransaction;
+}
+
+type BtcBatchResponse = Array<BtcSendTransactionResponse | BtcSignTransactionResponse>;
+```
+
+### 使用示例
+
+```ts
+const wallet = useTuringWallet();
+
+const requests = [
+  {
+    method: "sendTransaction",
+    params: {
+      toAddress: "bc1qxyz...",
+      amount: "100000",
+      broadcastEnabled: true,
+    },
+  },
+  {
+    method: "signTransaction",
+    params: {
+      txHex: "0200000001...",
+      type: "legacy",
+      prevOutScriptsHex: ["76a914...88ac"],
+    },
+  },
+];
+
+const results = await wallet.btc.sendBatchRequest(requests);
+
+results.forEach((result, index) => {
+  if (result.error) {
+    console.error(`Request ${index + 1} failed:`, result.error);
+  } else {
+    console.log(`Request ${index + 1} success:`, result);
+  }
+});
+```
