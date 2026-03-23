@@ -1,5 +1,5 @@
 import { ReactNode } from "react";
-import { TuringProviderType } from "../types/providerTypes"
+
 export declare const TuringContext: import("react").Context<TuringProviderType | undefined>;
 interface TuringProviderProps {
     children: ReactNode;
