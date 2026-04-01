@@ -276,7 +276,7 @@ interface FTData {
   name: string;
   symbol: string;
   decimal: number;
-  amount: number;
+  amount: number | string; // 大数请使用 string
 }
 
 interface CollectionData {
@@ -295,30 +295,31 @@ interface NFTData {
 }
 
 interface RequestParam {
-  flag: "P2PKH" | "COLLECTION_CREATE" | "NFT_CREATE" | "NFT_TRANSFER" | "FT_MINT" | "FT_TRANSFER" | "FT_MERGE" | "POOLNFT_MINT" | "POOLNFT_INIT" | "POOLNFT_LP_INCREASE" | "POOLNFT_LP_CONSUME" | "POOLNFT_LP_BURN" | "POOLNFT_SWAP_TO_TOKEN" | "POOLNFT_SWAP_TO_TBC" | "POOLNFT_MERGE" | "FTLP_MERGE";
+  flag: "P2PKH" | "COLLECTION_CREATE" | "NFT_CREATE" | "NFT_TRANSFER" | "FT_MINT" | "FT_TRANSFER" | "FT_MERGE" | "POOLNFT_MINT" | "POOLNFT_INIT" | "POOLNFT_LP_INCREASE" | "POOLNFT_LP_CONSUME" | "POOLNFT_LP_BURN" | "POOLNFT_SWAP_TO_TOKEN" | "POOLNFT_SWAP_TO_TBC" | "POOLNFT_MERGE" | "FTLP_MERGE" | "STABLECOIN_CREATE" | "STABLECOIN_MINT" | "STABLECOIN_TRANSFER" | "STABLECOIN_FREEZE" | "STABLECOIN_UNFREEZE" | "STABLECOIN_MERGE";
   address?: string;
-  satoshis?: number;
+  satoshis?: number | string;              // 单位为 satoshis，大数请使用 string
   collection_data?: string;
   ft_data?: string;
   nft_data?: string;
   collection_id?: string;
   nft_contract_address?: string;
-  ft_contract_address?: string;
-  tbc_amount?: number;
-  ft_amount?: number;
+  ft_contract_address?: string;            // FT 或稳定币合约交易 ID（稳定币的合约 ID 为 STABLECOIN_CREATE 返回的第一个 txid）
+  tbc_amount?: number | string;            // 大数请使用 string
+  ft_amount?: number | string;             // 大数请使用 string
   merge_times?: number;
   with_lock?: boolean;
   lpCostAddress?: string;
-  lpCostAmount?: number;
+  lpCostAmount?: number | string;          // 大数请使用 string
   pubKeyLock?: string[];
-  poolNFT_version?: number;
+  poolNFT_version?: 1 | 2;                // 强制为 2，若提供为别的值转为 2
   serviceFeeRate?: number;
   serverProvider_tag?: string;
-  lpPlan?: number;
+  lpPlan?: 1 | 2;                          // 默认 1
   domain?: string;
   isLockTime?: boolean;
-  lockTime?: number;
+  lockTime?: number | string;              // 锁仓至指定区块高度（POOLNFT 相关），或冻结至指定 unix 时间戳（STABLECOIN_FREEZE），大数请使用 string
   broadcastEnabled?: boolean;
+  mint_message?: string;                   // 铸造/增发跨链信息（STABLECOIN_CREATE / STABLECOIN_MINT 使用）
 }
 
 const params = [param: RequestParam];
@@ -662,6 +663,134 @@ const params = [
     poolNFT_version: 2,           // 可选，强制为 2
     lockTime: 0,                  // 可选，手动设置解锁参数到最大可解锁区块高度。如果启用了锁定但没有此参数，解锁参数将自动设置为（当前区块高度 - 2）
     domain: "",                   // 可选
+  },
+];
+
+const { txid } = await wallet.sendTransaction(params); // txid 为多个 Merge 交易的 txid，用逗号隔开
+// const { error } = await wallet.sendTransaction(params); // 发生错误时
+```
+
+### STABLECOIN_CREATE
+
+发行稳定币合约（仅需执行一次）。稳定币继承自 FT，构造方式与 FT 相同。
+
+```ts
+const params = [
+  {
+    flag: "STABLECOIN_CREATE",       // 必填
+    ft_data: JSON.stringify({        // 必填，JSON 格式的 FTData
+      name: "USD Test",
+      symbol: "USDT",
+      decimal: 6,
+      amount: 100000000,
+    }),
+    address: "",                     // 必填，初始接收地址（一般是管理员自身）
+    mint_message: "SourceChain: BSC, TXID: 34434...", // 必填，跨链信息，起始链名称和交易 id
+    broadcastEnabled: true,          // 可选，默认 true
+    domain: "",                      // 可选
+  },
+];
+
+const { txid } = await wallet.sendTransaction(params); // txid 有两个，用逗号隔开，第一个 txid 即为稳定币合约 ID
+// const { txraw } = await wallet.sendTransaction(params); // broadcastEnabled 为 false 时，返回的 txraw 有两个，用逗号隔开，第一个 txraw 对应的 txid 即为稳定币合约 ID，需批量广播，保证前面的 txraw 先广播
+// const { error } = await wallet.sendTransaction(params); // 发生错误时
+```
+
+### STABLECOIN_MINT
+
+增发稳定币（仅管理员可操作）。
+
+```ts
+const params = [
+  {
+    flag: "STABLECOIN_MINT",         // 必填
+    ft_contract_address: "",         // 必填，稳定币合约交易 ID（STABLECOIN_CREATE 返回的第一个 txid）
+    address: "",                     // 必填，接收新铸稳定币的地址
+    ft_amount: 50000,                // 必填，增发数量，大数请使用 string
+    mint_message: "SourceChain: BSC, TXID: 34434...", // 必填，跨链信息，起始链名称和交易 id
+    broadcastEnabled: true,          // 可选，默认 true
+    domain: "",                      // 可选
+  },
+];
+
+const { txid } = await wallet.sendTransaction(params);
+// const { txraw } = await wallet.sendTransaction(params); // broadcastEnabled 为 false 时
+// const { error } = await wallet.sendTransaction(params); // 发生错误时
+```
+
+### STABLECOIN_TRANSFER
+
+转移稳定币。
+
+```ts
+const params = [
+  {
+    flag: "STABLECOIN_TRANSFER",     // 必填
+    ft_contract_address: "",         // 必填，稳定币合约交易 ID（STABLECOIN_CREATE 返回的第一个 txid）
+    address: "",                     // 必填，接收地址
+    ft_amount: 1000,                 // 必填，转移数量，大数请使用 string
+    tbc_amount: 0,                   // 可选，同时转 TBC 和稳定币时设置此值
+    broadcastEnabled: true,          // 可选，默认 true
+    domain: "",                      // 可选
+  },
+];
+
+const { txid } = await wallet.sendTransaction(params);
+// const { txraw } = await wallet.sendTransaction(params); // broadcastEnabled 为 false 时
+// const { error } = await wallet.sendTransaction(params); // 发生错误时
+```
+
+### STABLECOIN_FREEZE
+
+冻结指定地址的稳定币 UTXO（仅管理员可操作）。冻结后，持有者须等到冻结到期才能使用该 UTXO。
+
+```ts
+const params = [
+  {
+    flag: "STABLECOIN_FREEZE",       // 必填
+    ft_contract_address: "",         // 必填，稳定币合约交易 ID（STABLECOIN_CREATE 返回的第一个 txid）
+    address: "",                     // 必填，被冻结的目标地址
+    lockTime: 1774410989,            // 必填，冻结至指定 unix 时间戳
+    broadcastEnabled: true,          // 可选，默认 true
+    domain: "",                      // 可选
+  },
+];
+
+const { txid } = await wallet.sendTransaction(params);
+// const { txraw } = await wallet.sendTransaction(params); // broadcastEnabled 为 false 时
+// const { error } = await wallet.sendTransaction(params); // 发生错误时
+```
+
+### STABLECOIN_UNFREEZE
+
+解冻指定地址的稳定币 UTXO（仅管理员可操作）。
+
+```ts
+const params = [
+  {
+    flag: "STABLECOIN_UNFREEZE",     // 必填
+    ft_contract_address: "",         // 必填，稳定币合约交易 ID（STABLECOIN_CREATE 返回的第一个 txid）
+    address: "",                     // 必填，被解冻的目标地址
+    broadcastEnabled: true,          // 可选，默认 true
+    domain: "",                      // 可选
+  },
+];
+
+const { txid } = await wallet.sendTransaction(params);
+// const { txraw } = await wallet.sendTransaction(params); // broadcastEnabled 为 false 时
+// const { error } = await wallet.sendTransaction(params); // 发生错误时
+```
+
+### STABLECOIN_MERGE
+
+合并稳定币 UTXO（要求所有 coinutxo 均已上链）。
+
+```ts
+const params = [
+  {
+    flag: "STABLECOIN_MERGE",        // 必填
+    ft_contract_address: "",         // 必填，稳定币合约交易 ID（STABLECOIN_CREATE 返回的第一个 txid）
+    domain: "",                      // 可选
   },
 ];
 

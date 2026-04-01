@@ -33,12 +33,18 @@ export type TransactionFlag =
   | "POOLNFT_SWAP_TO_TOKEN"
   | "POOLNFT_SWAP_TO_TBC"
   | "POOLNFT_MERGE"
-  | "FTLP_MERGE";
+  | "FTLP_MERGE"
+  | "STABLECOIN_CREATE"
+  | "STABLECOIN_MINT"
+  | "STABLECOIN_TRANSFER"
+  | "STABLECOIN_FREEZE"
+  | "STABLECOIN_UNFREEZE"
+  | "STABLECOIN_MERGE";
 
 
 export type SendTransaction = {
   flag: TransactionFlag;
-  satoshis?: number;
+  satoshis?: number | string;
   address?: string;
   collection_data?: string;
   ft_data?: string;
@@ -46,21 +52,22 @@ export type SendTransaction = {
   collection_id?: string;
   nft_contract_address?: string;
   ft_contract_address?: string;
-  tbc_amount?: number;
-  ft_amount?: number;
+  tbc_amount?: number | string;
+  ft_amount?: number | string;
   merge_times?: number;
   with_lock?: boolean;
   lpCostAddress?: string;
-  lpCostAmount?: number;
+  lpCostAmount?: number | string;
   pubKeyLock?: string[];
-  poolNFT_version?: number;
+  poolNFT_version?: 1 | 2;
   serviceFeeRate?: number;
   serviceProvider_flag?: string;
-  lpPlan?: number;
+  lpPlan?: 1 | 2;
   domain?: string;
   isLockTime?: boolean;
-  lockTime?: number;
+  lockTime?: number | string;
   broadcastEnabled?: boolean;
+  mint_message?: string;
 };
 
 export type SendTransactionResponse = {
