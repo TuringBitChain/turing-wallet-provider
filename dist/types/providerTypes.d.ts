@@ -157,6 +157,7 @@ export type BatchRequestMethod =
 export type BatchRequest = {
   method: BatchRequestMethod;
   params: SendTransaction | SignMessage | SignTransaction | SignAssociatedTransaction | Encrypt | Decrypt;
+  dependsOn?: string;
 };
 
 export type BatchResponse = Array<

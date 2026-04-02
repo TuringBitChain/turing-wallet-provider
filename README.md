@@ -276,7 +276,7 @@ interface FTData {
   name: string;
   symbol: string;
   decimal: number;
-  amount: number | string; // 大数请使用 string
+  amount: number;
 }
 
 interface CollectionData {
@@ -802,6 +802,8 @@ const { txid } = await wallet.sendTransaction(params); // txid 为多个 Merge �
 
 批量请求功能支持一次性提交多个独立的请求，每个请求独立执行，一个请求失败不会影响其他请求的执行。
 
+此外，当 `signMessage` 请求需要依赖 `signAssociatedTransaction` 的结果时，可以通过 `dependsOn` 字段将两者关联，详见下方[关联请求](#关联请求)章节。
+
 **限制：** 单次批量请求最多支持 5 个请求。
 
 ### 支持的方法
@@ -916,6 +918,88 @@ const mixedOperations = [
 
 const results = await wallet.sendBatchRequest(mixedOperations);
 ```
+
+### 关联请求
+
+在某些场景下，`signMessage` 的消息体中需要包含 `signAssociatedTransaction` 生成的交易 txid。由于 txid 需要从签名后的 `txraws` 中计算得出，无法提前填写，因此可以在 `signMessage` 请求上添加 `dependsOn` 字段，让钱包自动完成 txid 的计算和注入。
+
+不添加 `dependsOn` 时，`signAssociatedTransaction` 和 `signMessage` 仍然作为独立请求各自执行，互不影响。
+
+#### 用法
+
+批量请求固定为两个请求：第一个是 `signAssociatedTransaction`，第二个是 `signMessage`。在 `signMessage` 上添加 `dependsOn` 字段，指定将 txids 注入到消息 JSON 的哪个字段名即可。
+
+```ts
+const requests = [
+  {
+    method: "signAssociatedTransaction",
+    params: {
+      sourceTxraw: "...",
+      sourceUtxos: [
+        {
+          txId: "",
+          outputIndex: 0,
+          satoshis: 500,
+          script: ftcode,
+          scriptSigType: "tbc20",
+        },
+        {
+          txId: "",
+          outputIndex: 2,
+          satoshis: 10000,
+          script: p2pkh,
+          scriptSigType: "p2pkh",
+        },
+      ],
+      inputs: [
+        [
+          { outputIndex: 0, scriptSigType: "tbc20" },
+          { outputIndex: 2, scriptSigType: "p2pkh" },
+        ],
+      ],
+      outputs: [
+        [
+          { script: ftcode, satoshis: 500 },
+          { script: fttape, satoshis: 0 },
+          { script: p2pkh, satoshis: 8000 },
+        ],
+      ],
+    },
+  },
+  {
+    method: "signMessage",
+    params: {
+      message: JSON.stringify({
+        action: "mint",
+        amount: 100,
+      }),
+      encoding: "utf8",
+    },
+    dependsOn: "txids", // 将 txids 注入到 message JSON 的 "txids" 字段
+  },
+];
+
+const results = await wallet.sendBatchRequest(requests);
+
+// results[0] => signAssociatedTransaction 的结果: { txraws: string[] }
+// results[1] => signMessage 的结果: { address, pubkey, sig, message }
+// 其中 message 为包含 txids 的完整 JSON，例如：
+// { "action": "mint", "amount": 100, "txids": ["txid1", "txid2", ...] }
+```
+
+#### 执行流程
+
+1. 执行 `signAssociatedTransaction`，得到 `txraws`
+2. 从 `txraws` 计算出 txid 数组
+3. 解析 `signMessage` 的 `message` JSON，将 txid 数组注入到 `dependsOn` 指定的字段
+4. 使用注入后的完整消息执行 `signMessage`
+
+#### 约束
+
+- 批量请求必须恰好包含两个请求：第一个为 `signAssociatedTransaction`，第二个为 `signMessage`
+- `dependsOn` 的值为字符串，表示注入到 message JSON 中的字段名
+- 如果 `signAssociatedTransaction` 执行失败，`signMessage` 也会失败
+- `signMessage` 的 `message` 参数必须是合法的 JSON 字符串
 
 ## evm.sendTransaction
 
