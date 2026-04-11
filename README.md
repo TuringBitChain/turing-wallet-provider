@@ -921,13 +921,24 @@ const results = await wallet.sendBatchRequest(mixedOperations);
 
 ### 关联请求
 
-在某些场景下，`signMessage` 的消息体中需要包含 `signAssociatedTransaction` 生成的交易 txid。由于 txid 需要从签名后的 `txraws` 中计算得出，无法提前填写，因此可以在 `signMessage` 请求上添加 `dependsOn` 字段，让钱包自动完成 txid 的计算和注入。
+在某些场景下，`signMessage` 的消息体中需要包含前一个请求生成的交易 txid。由于 txid 在请求前无法确定，因此可以在 `signMessage` 请求上添加 `dependsOn` 字段，让钱包自动完成 txid 的提取和注入。
 
-不添加 `dependsOn` 时，`signAssociatedTransaction` 和 `signMessage` 仍然作为独立请求各自执行，互不影响。
+不添加 `dependsOn` 时，两个请求仍然作为独立请求各自执行，互不影响。
+
+#### 支持的第一个方法
+
+| 方法 | txid 提取方式 |
+| --- | --- |
+| `signAssociatedTransaction` | 从返回的 `txraws: string[]` 中计算每个 txraw 的 txid |
+| `sendTransaction` | `broadcastEnabled: true` 时从返回的 `txid` 按逗号拆分；`broadcastEnabled: false` 时从返回的 `txraw` 按逗号拆分后计算 txid |
+
+无论哪种方法，最终注入到 `signMessage` 的 `message` JSON 中的都是一个 **txid 字符串数组**。
 
 #### 用法
 
-批量请求固定为两个请求：第一个是 `signAssociatedTransaction`，第二个是 `signMessage`。在 `signMessage` 上添加 `dependsOn` 字段，指定将 txids 注入到消息 JSON 的哪个字段名即可。
+批量请求固定为两个请求：第一个是 `signAssociatedTransaction` 或 `sendTransaction`，第二个是 `signMessage`。在 `signMessage` 上添加 `dependsOn` 字段，指定将 txids 注入到消息 JSON 的哪个字段名即可。
+
+#### 示例一：signAssociatedTransaction + signMessage
 
 ```ts
 const requests = [
@@ -987,18 +998,61 @@ const results = await wallet.sendBatchRequest(requests);
 // { "action": "mint", "amount": 100, "txids": ["txid1", "txid2", ...] }
 ```
 
+#### 示例二：sendTransaction + signMessage
+
+```ts
+const requests = [
+  {
+    method: "sendTransaction",
+    params: {
+      flag: "STABLECOIN_CREATE",
+      ft_data: JSON.stringify({
+        name: "USD Test",
+        symbol: "USDT",
+        decimal: 6,
+        amount: 100000000,
+      }),
+      address: "",
+      mint_message: "SourceChain: BSC, TXID: 34434...",
+      broadcastEnabled: true,
+      domain: "",
+    },
+  },
+  {
+    method: "signMessage",
+    params: {
+      message: JSON.stringify({
+        action: "create_stablecoin",
+      }),
+      encoding: "utf8",
+    },
+    dependsOn: "txids", // 将 txids 注入到 message JSON 的 "txids" 字段
+  },
+];
+
+const results = await wallet.sendBatchRequest(requests);
+
+// results[0] => sendTransaction 的结果: { txid: "txid1,txid2" }
+// results[1] => signMessage 的结果: { address, pubkey, sig, message }
+// 其中 message 为包含 txids 的完整 JSON，例如：
+// { "action": "create_stablecoin", "txids": ["txid1", "txid2"] }
+```
+
 #### 执行流程
 
-1. 执行 `signAssociatedTransaction`，得到 `txraws`
-2. 从 `txraws` 计算出 txid 数组
+1. 执行第一个请求（`signAssociatedTransaction` 或 `sendTransaction`）
+2. 从结果中提取 txid 数组：
+   - `signAssociatedTransaction`：从 `txraws` 计算每个 txraw 的 txid
+   - `sendTransaction`（`broadcastEnabled: true`）：将 `txid` 按逗号拆分
+   - `sendTransaction`（`broadcastEnabled: false`）：将 `txraw` 按逗号拆分后计算 txid
 3. 解析 `signMessage` 的 `message` JSON，将 txid 数组注入到 `dependsOn` 指定的字段
 4. 使用注入后的完整消息执行 `signMessage`
 
 #### 约束
 
-- 批量请求必须恰好包含两个请求：第一个为 `signAssociatedTransaction`，第二个为 `signMessage`
+- 批量请求必须恰好包含两个请求：第一个为 `signAssociatedTransaction` 或 `sendTransaction`，第二个为 `signMessage`
 - `dependsOn` 的值为字符串，表示注入到 message JSON 中的字段名
-- 如果 `signAssociatedTransaction` 执行失败，`signMessage` 也会失败
+- 如果第一个请求执行失败，`signMessage` 也会失败
 - `signMessage` 的 `message` 参数必须是合法的 JSON 字符串
 
 ## evm.sendTransaction
