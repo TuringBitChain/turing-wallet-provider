@@ -68,6 +68,8 @@ export type SendTransaction = {
   lockTime?: number | string;
   broadcastEnabled?: boolean;
   mint_message?: string;
+  utxo_txid?: string;
+  utxo_index?: number;
 };
 
 export type SendTransactionResponse = {

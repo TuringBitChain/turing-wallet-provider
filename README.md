@@ -320,6 +320,8 @@ interface RequestParam {
   lockTime?: number | string;              // 锁仓至指定区块高度（POOLNFT 相关），或冻结至指定 unix 时间戳（STABLECOIN_FREEZE），大数请使用 string
   broadcastEnabled?: boolean;
   mint_message?: string;                   // 铸造/增发跨链信息（STABLECOIN_CREATE / STABLECOIN_MINT 使用）
+  utxo_txid?: string;                      // 目标 UTXO 的交易 ID（STABLECOIN_FREEZE / STABLECOIN_UNFREEZE 使用）
+  utxo_index?: number;                     // 目标 UTXO 的输出索引（STABLECOIN_FREEZE / STABLECOIN_UNFREEZE 使用）
 }
 
 const params = [param: RequestParam];
@@ -750,6 +752,8 @@ const params = [
     flag: "STABLECOIN_FREEZE",       // 必填
     ft_contract_address: "",         // 必填，稳定币合约交易 ID（STABLECOIN_CREATE 返回的第一个 txid）
     address: "",                     // 必填，被冻结的目标地址
+    utxo_txid: "",                   // 必填，目标稳定币 UTXO 的交易 ID
+    utxo_index: 0,                   // 必填，目标稳定币 UTXO 的输出索引
     lockTime: 1774410989,            // 必填，冻结至指定 unix 时间戳
     broadcastEnabled: true,          // 可选，默认 true
     domain: "",                      // 可选
@@ -771,6 +775,8 @@ const params = [
     flag: "STABLECOIN_UNFREEZE",     // 必填
     ft_contract_address: "",         // 必填，稳定币合约交易 ID（STABLECOIN_CREATE 返回的第一个 txid）
     address: "",                     // 必填，被解冻的目标地址
+    utxo_txid: "",                   // 必填，目标稳定币 UTXO 的交易 ID
+    utxo_index: 0,                   // 必填，目标稳定币 UTXO 的输出索引
     broadcastEnabled: true,          // 可选，默认 true
     domain: "",                      // 可选
   },
