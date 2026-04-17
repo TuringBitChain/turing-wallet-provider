@@ -314,7 +314,7 @@ interface RequestParam {
   poolNFT_version?: 1 | 2;                // 强制为 2，若提供为别的值转为 2
   serviceFeeRate?: number;
   serverProvider_tag?: string;
-  lpPlan?: 1 | 2;                          // 默认 1
+  lpPlan?: 1 | 2 | 3 | 4 | 5;               // 默认 1
   domain?: string;
   isLockTime?: boolean;
   lockTime?: number | string;              // 锁仓至指定区块高度（POOLNFT 相关），或冻结至指定 unix 时间戳（STABLECOIN_FREEZE），大数请使用 string
@@ -481,12 +481,12 @@ const params = [
     ft_contract_address: "",      // 必填，FT 合约地址
     serverProvider_tag: "",       // 必填，服务提供商标签
     poolNFT_version: 2,           // 可选，强制为 2
-    serviceFeeRate: 25,           // 可选，0-100 整数，默认 25
+    serviceFeeRate: 25,           // 可选，正整数，默认 25
     with_lock: false,             // 可选，默认 false；为 true 时创建带哈希锁的池子
     pubKeyLock: ["pubkey1", "pubkey2"], // with_lock 为 true 时必填
     lpCostAddress: "",            // with_lock 为 true 时必填，扣除流动性添加成本的地址
     lpCostAmount: 0,              // with_lock 为 true 时必填，扣除流动性添加成本的 TBC 数量
-    lpPlan: 1,                    // 可选，1 或 2，默认 1
+    lpPlan: 1,                    // 可选，1-5，默认 1
     isLockTime: false,            // 可选，默认 false
     broadcastEnabled: true,       // 可选，默认 true
     domain: "",                   // 可选
@@ -600,7 +600,7 @@ const params = [
     address: "",                   // 必填，接收地址
     tbc_amount: 0,                 // 必填，用于交换的 TBC 数量
     poolNFT_version: 2,            // 可选，强制为 2
-    lpPlan: 1,                     // 可选，1 或 2，默认 1
+    lpPlan: 1,                     // 可选，1-5，默认 1
     broadcastEnabled: true,        // 可选，默认 true
     domain: "",                    // 可选
   },
@@ -623,7 +623,7 @@ const params = [
     address: "",                  // 必填，接收地址
     ft_amount: 0,                 // 必填，用于交换的 FT 数量
     poolNFT_version: 2,           // 可选，强制为 2
-    lpPlan: 1,                    // 可选，1 或 2，默认 1
+    lpPlan: 1,                    // 可选，1-5，默认 1
     broadcastEnabled: true,       // 可选，默认 true
     domain: "",                   // 可选
   },

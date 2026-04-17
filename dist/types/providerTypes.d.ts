@@ -62,7 +62,7 @@ export type SendTransaction = {
   poolNFT_version?: 1 | 2;
   serviceFeeRate?: number;
   serviceProvider_flag?: string;
-  lpPlan?: 1 | 2;
+  lpPlan?: 1 | 2 | 3 | 4 | 5;
   domain?: string;
   isLockTime?: boolean;
   lockTime?: number | string;
