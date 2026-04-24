@@ -125,7 +125,7 @@ export type Input = {
   script?: string;
   satoshis?: number;
   outputIndex: number;
-  scriptSigType: "p2pkh" | "tbc20" | "tbc20_contract" | "other";
+  scriptSigType: "p2pkh" | "tbc20" | "tbc20_contract" | "tbc20_coin" | "tbc20_coin_contract" | "other";
   unfinishedScriptSig?: string;
   ftVersion?: 1 | 2;
   contractTxId?: string;

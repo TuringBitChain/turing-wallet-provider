@@ -176,33 +176,93 @@ broadcastTXsraw(txs.map((tx) => ({ txraw: tx.uncheckedSerialize() })));
 
 ## signAssociatedTransaction
 
+使用钱包签名父子（关联）交易。钱包根据源交易构建子交易并统一签名。
+
+### 用法
+
 ```ts
-//使用示例
+const { txraws } = await Turing.signAssociatedTransaction({
+  sourceTxraw,
+  sourceUtxos,
+  inputs,
+  outputs,
+});
+```
+
+### 参数
+
+```ts
 interface Input {
-  txId?: string;
-  script?: string; //仅支持hex类型，不支持asm
-  satoshis?: number;
-  outputIndex: number;
-  scriptSigType: "p2pkh" | "tbc20" | "tbc20_contract" | "other";
-  unfinishedScriptSig?: string; // 对于"other"类型，用于提供自定义脚本(不包含交易数据的锁定脚本）模板，仅支持hex类型，不支持asm。签名部分用097369676e6174757265替代，09为7369676e6174757265长度
-  ftVersion?: 1 | 2; // 对于"tbc20_contract"类型，FT版本(1或2)
-  contractTxId?: string; // 对于"tbc20_contract"类型，合约交易ID
+  txId?: string;               // 交易 ID（源交易输入需提供）
+  script?: string;             // 锁定脚本，仅支持 hex 格式
+  satoshis?: number;           // satoshi 值
+  outputIndex: number;         // 输出索引
+  scriptSigType:
+    | "p2pkh"
+    | "tbc20"                  // 普通 FT 转账解锁
+    | "tbc20_contract"         // 普通 FT 在合约/swap 场景下的解锁
+    | "tbc20_coin"             // 稳定币转账解锁（FT.getFTunlock + isCoin）
+    | "tbc20_coin_contract"    // 稳定币在合约/swap 场景下的解锁（FT.getFTunlockSwap + isCoin）
+    | "other";                 // 脚本签名类型
+  unfinishedScriptSig?: string;  // "other" 类型的自定义脚本模板（hex 格式），签名部分用 097369676e6174757265 替代
+  ftVersion?: 1 | 2;           // "tbc20_contract"/"tbc20_coin_contract" 类型的 FT 版本
+  contractTxId?: string;       // "tbc20_contract"/"tbc20_coin_contract" 类型的合约交易 ID
 }
 
 interface Output {
-  script: string; //仅支持hex类型，不支持asm
-  satoshis: number;
+  script: string;    // 输出锁定脚本，仅支持 hex 格式
+  satoshis: number;  // 输出的 satoshi 值
 }
 
 interface SignAssociatedTransactionRequestData {
-  sourceTxraw: string;
-  sourceUtxos: Input[];
-  inputs?: Input[][];
-  outputs?: Output[][];
+  sourceTxraw: string;      // 源头交易的原始 hex 字符串
+  sourceUtxos: Input[];     // 源头交易的 UTXO 数组
+  inputs?: Input[][];       // 子交易输入的二维数组
+  outputs?: Output[][];     // 子交易输出的二维数组
 }
+```
 
-//ft转移示例参数
-const sourceUtxos: intput[] = [
+| 参数 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `sourceTxraw` | `string` | 是 | 源头交易的原始 hex 字符串 |
+| `sourceUtxos` | `Input[]` | 是 | 源头交易的 UTXO 数组 |
+| `inputs` | `Input[][]` | 否 | 二维数组 — 每个子数组代表一个子交易的输入 |
+| `outputs` | `Output[][]` | 否 | 二维数组 — 每个子数组代表一个子交易的输出 |
+
+### 返回值
+
+```ts
+interface SignAssociatedTransactionResponse {
+  txraws: string[];  // 已组装的待广播交易 hex 字符串数组（包含父子交易）
+}
+```
+
+| 字段 | 类型 | 说明 |
+| --- | --- | --- |
+| `txraws` | `string[]` | 包含父子交易的已组装待广播交易数组 |
+
+### 错误处理
+
+```ts
+try {
+  const { txraws } = await Turing.signAssociatedTransaction({
+    sourceTxraw,
+    sourceUtxos,
+    inputs,
+    outputs,
+  });
+  console.log("交易:", txraws);
+} catch (error) {
+  console.error("签名失败:", error);
+}
+```
+
+### 示例
+
+FT 转移示例：
+
+```ts
+const sourceUtxos: Input[] = [
   {
     txId: "",
     outputIndex: 0,
@@ -219,7 +279,7 @@ const sourceUtxos: intput[] = [
   },
 ];
 
-const inputs: intput[][] = [
+const inputs: Input[][] = [
   [
     { outputIndex: 0, scriptSigType: "tbc20" },
     { outputIndex: 2, scriptSigType: "p2pkh" },
@@ -230,7 +290,7 @@ const inputs: intput[][] = [
   ],
 ];
 
-const outputs: output[][] = [
+const outputs: Output[][] = [
   [
     {
       script: ftcode,
@@ -261,8 +321,113 @@ const outputs: output[][] = [
   ],
 ];
 
-const wallet = useTuringWallet();
-const { txraws } = await wallet.signAssociatedTransaction(params);
+const { txraws } = await Turing.signAssociatedTransaction({
+  sourceTxraw,
+  sourceUtxos,
+  inputs,
+  outputs,
+});
+```
+
+### 稳定币 (tbc20_coin / tbc20_coin_contract)
+
+稳定币是一种特殊的 FT，解锁脚本与普通 FT 不同，所以提供了专用的 `scriptSigType`：
+
+- `"tbc20_coin"`：稳定币普通转账解锁
+- `"tbc20_coin_contract"`：稳定币参与合约 / swap 场景的解锁（同时需要 `contractTxId` 与 `ftVersion`）
+
+#### 子交易 (`inputs` / `outputs`)
+
+只要把对应输入的 `scriptSigType` 标成 `"tbc20_coin"` 或 `"tbc20_coin_contract"` 即可，**其它字段与普通 FT 写法完全一致**，无需关心 sequence / nLockTime。
+
+#### 源交易 (`sourceTxraw`)
+
+`sourceTxraw` 是调用方自己组装好的原始交易，**如果里面包含稳定币输入**，必须在构建时自行满足以下两个条件：
+
+1. 每个稳定币输入的 `sequence` 设为 `0xFFFFFFFE`
+2. 整笔交易的 `nLockTime` 设为所有被花费稳定币 UTXO tape 中 `lockTime` 的最大值
+
+参考写法：
+
+```ts
+import { Transaction } from "tbc-lib-js";
+import { stableCoin } from "tbc-contract";
+
+const tx = new Transaction().from(coinUtxos).from(payUtxo);
+// ...addOutput(...)
+
+for (let i = 0; i < coinUtxos.length; i++) {
+  tx.setInputSequence(i, 0xFFFFFFFE);
+}
+
+let lockTimeMax = 0;
+for (let i = 0; i < coinUtxos.length; i++) {
+  const lt = stableCoin.getLockTimeFromTape(
+    preTXs[i].outputs[coinUtxos[i].outputIndex + 1].script
+  );
+  lockTimeMax = Math.max(lockTimeMax, lt);
+}
+tx.setLockTime(lockTimeMax);
+
+const sourceTxraw = tx.uncheckedSerialize();
+```
+
+> 对应的 `sourceUtxos` 条目仍要填 `"tbc20_coin"` 或 `"tbc20_coin_contract"`。
+
+#### 稳定币示例
+
+父交易花掉 1 个稳定币 UTXO + 1 个 P2PKH UTXO，产生新的稳定币 UTXO（output 0/1 为 code/tape，output 2 为 P2PKH 找零）；子交易再次花掉这个新稳定币 UTXO：
+
+```ts
+const sourceUtxos: Input[] = [
+  {
+    txId: coinUtxo.txId,
+    outputIndex: coinUtxo.outputIndex,
+    satoshis: 500,
+    script: coinCodeHex,
+    scriptSigType: "tbc20_coin",
+  },
+  {
+    txId: payUtxo.txId,
+    outputIndex: payUtxo.outputIndex,
+    satoshis: 10000,
+    script: p2pkhHex,
+    scriptSigType: "p2pkh",
+  },
+];
+
+const inputs: Input[][] = [
+  [
+    { outputIndex: 0, scriptSigType: "tbc20_coin" },
+    { outputIndex: 2, scriptSigType: "p2pkh" },
+  ],
+];
+
+const outputs: Output[][] = [
+  [
+    { script: newCoinCodeHex, satoshis: 500 },
+    { script: newCoinTapeHex, satoshis: 0 },
+    { script: p2pkhChangeHex, satoshis: 8000 },
+  ],
+];
+
+const { txraws } = await Turing.signAssociatedTransaction({
+  sourceTxraw,
+  sourceUtxos,
+  inputs,
+  outputs,
+});
+```
+
+如果稳定币要走合约 / swap 路径，把 `scriptSigType` 改成 `"tbc20_coin_contract"`，并附上 `contractTxId` 与 `ftVersion`：
+
+```ts
+{
+  outputIndex: 0,
+  scriptSigType: "tbc20_coin_contract",
+  contractTxId: "<合约交易 ID>",
+  ftVersion: 2,
+}
 ```
 
 ## sendTransaction
