@@ -17,6 +17,19 @@ export type Info = {
   version: string;
 };
 
+export type GetNetworkResponse =
+  | {
+      network: "tbc";
+      type: "mainnet" | "testnet";
+      domain: string;
+      isCustomNetwork: boolean;
+      customNetwork?: { name: string; domain: string };
+    }
+  | {
+      network: "all" | "btc" | "eth" | "bnb";
+      type: "mainnet";
+    };
+
 export type TransactionFlag =
   | "P2PKH"
   | "COLLECTION_CREATE"
@@ -241,6 +254,7 @@ export type TuringProviderType = {
   getPubKey: () => Promise<PubKey | undefined>;
   getAddress: () => Promise<Address | undefined>;
   getInfo: () => Promise<Info | undefined>;
+  getNetwork: () => Promise<GetNetworkResponse | undefined>;
   sendTransaction: (
     params: SendTransaction[]
   ) => Promise<SendTransactionResponse | undefined>;

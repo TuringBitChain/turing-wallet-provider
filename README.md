@@ -65,6 +65,68 @@ const {name,platform,version} = await wallet.getInfo();
 {Turing,android,1.0.0}//示例的返回值
 ```
 
+## getNetwork
+
+获取已连接账户当前激活的网络。
+
+### 用法
+
+```ts
+const wallet = useTuringWallet();
+const network = await wallet.getNetwork();
+```
+
+### 参数
+
+该方法不接受任何参数。
+
+### 返回值
+
+```ts
+type GetNetworkResponse =
+  | {
+      network: "tbc";
+      type: "mainnet" | "testnet";
+      domain: string;
+      isCustomNetwork: boolean;
+      customNetwork?: { name: string; domain: string };
+    }
+  | {
+      network: "all" | "btc" | "eth" | "bnb";
+      type: "mainnet";
+    };
+```
+
+| 字段 | 类型 | 说明 |
+| --- | --- | --- |
+| `network` | `"tbc" \| "btc" \| "eth" \| "bnb" \| "all"` | 当前激活的链。`"all"` 表示用户处于钱包的"所有网络"视图，未选择具体的链。 |
+| `type` | `"mainnet" \| "testnet"` | 主网 / 测试网。仅 `tbc` 可能为 `"testnet"`，其余分支恒为 `"mainnet"`。 |
+| `domain` | `string` | 钱包用于 TBC 链的 RPC 节点。**仅 `tbc` 返回。** |
+| `isCustomNetwork` | `boolean` | 当前节点是否为用户添加的自定义 TBC 节点。**仅 `tbc` 返回。** |
+| `customNetwork` | `{ name: string; domain: string }?` | 自定义 TBC 节点的展示信息（如有）。 |
+
+返回类型是一个判别联合（discriminated union），根据 `network` 分支处理：
+
+- `"tbc"` —— 钱包暴露完整信息：`type`、`domain` 以及自定义节点信息。
+- `"all"` / `"btc"` / `"eth"` / `"bnb"` —— 仅返回 `network` 和 `type: "mainnet"`。EVM DApp 可根据 `network` 自行选择 RPC 节点。
+
+### 错误处理
+
+| 错误 | 原因 |
+| --- | --- |
+| `User not connected` | 尚未调用 `wallet.connect()`，或用户已断开连接。 |
+
+```ts
+const wallet = useTuringWallet();
+
+try {
+  const info = await wallet.getNetwork();
+  console.log(info);
+} catch (error) {
+  console.error("Failed to get network:", error);
+}
+```
+
 ## signMessage
 
 ```ts
