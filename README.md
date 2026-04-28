@@ -83,32 +83,16 @@ const network = await wallet.getNetwork();
 ### 返回值
 
 ```ts
-type GetNetworkResponse =
-  | {
-      network: "tbc";
-      type: "mainnet" | "testnet";
-      domain: string;
-      isCustomNetwork: boolean;
-      customNetwork?: { name: string; domain: string };
-    }
-  | {
-      network: "all" | "btc" | "eth" | "bnb";
-      type: "mainnet";
-    };
+interface GetNetworkResponse {
+  network: "tbc" | "btc" | "eth" | "bnb" | "all";
+  type: "mainnet" | "testnet";
+}
 ```
 
 | 字段 | 类型 | 说明 |
 | --- | --- | --- |
 | `network` | `"tbc" \| "btc" \| "eth" \| "bnb" \| "all"` | 当前激活的链。`"all"` 表示用户处于钱包的"所有网络"视图，未选择具体的链。 |
-| `type` | `"mainnet" \| "testnet"` | 主网 / 测试网。仅 `tbc` 可能为 `"testnet"`，其余分支恒为 `"mainnet"`。 |
-| `domain` | `string` | 钱包用于 TBC 链的 RPC 节点。**仅 `tbc` 返回。** |
-| `isCustomNetwork` | `boolean` | 当前节点是否为用户添加的自定义 TBC 节点。**仅 `tbc` 返回。** |
-| `customNetwork` | `{ name: string; domain: string }?` | 自定义 TBC 节点的展示信息（如有）。 |
-
-返回类型是一个判别联合（discriminated union），根据 `network` 分支处理：
-
-- `"tbc"` —— 钱包暴露完整信息：`type`、`domain` 以及自定义节点信息。
-- `"all"` / `"btc"` / `"eth"` / `"bnb"` —— 仅返回 `network` 和 `type: "mainnet"`。EVM DApp 可根据 `network` 自行选择 RPC 节点。
+| `type` | `"mainnet" \| "testnet"` | 主网 / 测试网。仅 `tbc` 可能为 `"testnet"`，其余链恒为 `"mainnet"`。 |
 
 ### 错误处理
 
@@ -126,6 +110,25 @@ try {
   console.error("Failed to get network:", error);
 }
 ```
+
+### 订阅变化
+
+钱包内切换网络时，dapp 会收到 `TuringNetworkChanged` 事件并附带新的网络信息，无需轮询 `getNetwork()`。
+
+```ts
+window.addEventListener("TuringNetworkChanged", (event) => {
+  const { network } = event.detail;
+  // `network` 与 wallet.getNetwork() 的返回值同结构
+});
+```
+
+```ts
+interface TuringNetworkChangedDetail {
+  network: GetNetworkResponse;
+}
+```
+
+仅在 dapp 已连接期间触发，且只推送 `connect()` 之后的变化（初始网络可通过 `wallet.getNetwork()` 获取）。
 
 ## signMessage
 

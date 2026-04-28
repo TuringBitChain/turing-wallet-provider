@@ -17,18 +17,14 @@ export type Info = {
   version: string;
 };
 
-export type GetNetworkResponse =
-  | {
-      network: "tbc";
-      type: "mainnet" | "testnet";
-      domain: string;
-      isCustomNetwork: boolean;
-      customNetwork?: { name: string; domain: string };
-    }
-  | {
-      network: "all" | "btc" | "eth" | "bnb";
-      type: "mainnet";
-    };
+export type GetNetworkResponse = {
+  network: "tbc" | "btc" | "eth" | "bnb" | "all";
+  type: "mainnet" | "testnet";
+};
+
+export type TuringNetworkChangedDetail = {
+  network: GetNetworkResponse;
+};
 
 export type TransactionFlag =
   | "P2PKH"
