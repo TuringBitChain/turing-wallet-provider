@@ -43,11 +43,7 @@ export type TransactionFlag =
   | "POOLNFT_SWAP_TO_TBC"
   | "POOLNFT_MERGE"
   | "FTLP_MERGE"
-  | "STABLECOIN_CREATE"
-  | "STABLECOIN_MINT"
   | "STABLECOIN_TRANSFER"
-  | "STABLECOIN_FREEZE"
-  | "STABLECOIN_UNFREEZE"
   | "STABLECOIN_MERGE";
 
 
@@ -76,9 +72,6 @@ export type SendTransaction = {
   isLockTime?: boolean;
   lockTime?: number | string;
   broadcastEnabled?: boolean;
-  mint_message?: string;
-  utxo_txid?: string;
-  utxo_index?: number;
 };
 
 export type SendTransactionResponse = {
@@ -134,7 +127,7 @@ export type Input = {
   script?: string;
   satoshis?: number;
   outputIndex: number;
-  scriptSigType: "p2pkh" | "tbc20" | "tbc20_contract" | "tbc20_coin" | "tbc20_coin_contract" | "other";
+  scriptSigType: "p2pkh" | "tbc20" | "tbc20_contract" | "tbc20_coin" | "other";
   unfinishedScriptSig?: string;
   ftVersion?: 1 | 2;
   contractTxId?: string;
