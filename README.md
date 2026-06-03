@@ -267,10 +267,11 @@ interface Input {
     | "tbc20"                  // 普通 FT 转账解锁
     | "tbc20_contract"         // 普通 FT 在合约/swap 场景下的解锁
     | "tbc20_coin"             // 稳定币转账解锁（FT.getFTunlock + isCoin）
+    | "tbc20_coin_contract"    // 稳定币在合约/swap 场景下的解锁（FT.getFTunlockSwap + isCoin）
     | "other";                 // 脚本签名类型
   unfinishedScriptSig?: string;  // "other" 类型的自定义脚本模板（hex 格式），签名部分用 097369676e6174757265 替代
-  ftVersion?: 1 | 2;           // "tbc20_contract" 类型的 FT 版本
-  contractTxId?: string;       // "tbc20_contract" 类型的合约交易 ID
+  ftVersion?: 1 | 2 | 3;       // "tbc20_contract" / "tbc20_coin_contract" 类型的 FT 版本
+  contractTxId?: string;       // "tbc20_contract" / "tbc20_coin_contract" 类型的合约交易 ID
 }
 
 interface Output {
@@ -398,10 +399,11 @@ const { txraws } = await Turing.signAssociatedTransaction({
 稳定币是一种特殊的 FT，转移时的解锁脚本与普通 FT 不同，所以提供了专用的 `scriptSigType`：
 
 - `"tbc20_coin"`：稳定币普通转账解锁
+- `"tbc20_coin_contract"`：稳定币在合约/swap 场景下的解锁（需额外提供 `contractTxId` 和 `ftVersion`）
 
 #### 子交易 (`inputs` / `outputs`)
 
-只要把对应输入的 `scriptSigType` 标成 `"tbc20_coin"` 即可，**其它字段与普通 FT 写法完全一致**，无需关心 sequence / nLockTime。
+只要把对应输入的 `scriptSigType` 标成 `"tbc20_coin"`（合约场景用 `"tbc20_coin_contract"` 并补充 `contractTxId` / `ftVersion`）即可，**其它字段与普通 FT 写法完全一致**，无需关心 sequence / nLockTime。
 
 #### 源交易 (`sourceTxraw`)
 
