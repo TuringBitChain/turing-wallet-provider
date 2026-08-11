@@ -513,8 +513,36 @@ interface NFTData {
   file?: string; // base64
 }
 
-interface RequestParam {
-  flag: "P2PKH" | "COLLECTION_CREATE" | "NFT_CREATE" | "NFT_TRANSFER" | "FT_MINT" | "FT_TRANSFER" | "FT_MERGE" | "POOLNFT_MINT" | "POOLNFT_INIT" | "POOLNFT_LP_INCREASE" | "POOLNFT_LP_CONSUME" | "POOLNFT_LP_BURN" | "POOLNFT_SWAP_TO_TOKEN" | "POOLNFT_SWAP_TO_TBC" | "POOLNFT_MERGE" | "FTLP_MERGE" | "STABLECOIN_TRANSFER" | "STABLECOIN_MERGE";
+type TransactionFlag =
+  | "P2PKH"
+  | "COLLECTION_CREATE"
+  | "NFT_CREATE"
+  | "NFT_TRANSFER"
+  | "FT_MINT"
+  | "FT_TRANSFER"
+  | "FT_MERGE"
+  | "POOLNFT_MINT"
+  | "POOLNFT_INIT"
+  | "POOLNFT_LP_INCREASE"
+  | "POOLNFT_LP_CONSUME"
+  | "POOLNFT_LP_BURN"
+  | "POOLNFT_SWAP_TO_TOKEN"
+  | "POOLNFT_SWAP_TO_TBC"
+  | "POOLNFT_MERGE"
+  | "FTLP_MERGE"
+  | "STABLECOIN_TRANSFER"
+  | "STABLECOIN_MERGE";
+
+type MergeTransactionFlag =
+  | "FT_MERGE"
+  | "STABLECOIN_MERGE"
+  | "POOLNFT_MERGE"
+  | "FTLP_MERGE";
+
+type NonMergeTransactionFlag = Exclude<TransactionFlag, MergeTransactionFlag>;
+
+interface NonMergeRequestParam {
+  flag: NonMergeTransactionFlag;
   address?: string;
   satoshis?: number | string;              // 单位为 satoshis，大数请使用 string
   collection_data?: string;
@@ -540,6 +568,30 @@ interface RequestParam {
   broadcastEnabled?: boolean;
 }
 
+type MergeRequestParam =
+  | {
+      flag: "FT_MERGE";
+      ft_contract_address: string;
+      domain?: string;
+    }
+  | {
+      flag: "STABLECOIN_MERGE";
+      ft_contract_address: string;
+      domain?: string;
+    }
+  | {
+      flag: "POOLNFT_MERGE";
+      nft_contract_address: string;
+      domain?: string;
+    }
+  | {
+      flag: "FTLP_MERGE";
+      nft_contract_address: string;
+      domain?: string;
+    };
+
+type RequestParam = NonMergeRequestParam | MergeRequestParam;
+
 const params = [param: RequestParam];
 ```
 
@@ -548,6 +600,8 @@ const params = [param: RequestParam];
 - `txid` - 交易 ID（当 `broadcastEnabled` 为 `true` 时）
 - `txraw` - 交易原始字符串（当 `broadcastEnabled` 为 `false` 时）
 - `error` - 错误对象（发生错误时）
+
+专用 Merge 请求始终由钱包广播，成功时返回 `txid`。Merge 请求不接受 `broadcastEnabled`，也不支持通过 `sendBatchRequest` 提交。
 
 ### P2PKH
 
@@ -682,7 +736,7 @@ const params = [
   },
 ];
 
-const { txid } = await wallet.sendTransaction(params); // txid 为多个 Merge 交易的 txid，用逗号隔开
+const { txid } = await wallet.sendTransaction(params);
 // const { error } = await wallet.sendTransaction(params); // 发生错误时
 ```
 
@@ -859,13 +913,11 @@ const params = [
   {
     flag: "POOLNFT_MERGE",        // 必填
     nft_contract_address: "",     // 必填，PoolNFT 合约地址
-    poolNFT_version: 2,           // 可选，强制为 2
-    merge_times: 10,              // 可选，1-10 次，默认 10 次，不足时提前终止
     domain: "",                   // 可选
   },
 ];
 
-const { txid } = await wallet.sendTransaction(params); // txid 为多个 Merge 交易的 txid，用逗号隔开
+const { txid } = await wallet.sendTransaction(params);
 // const { error } = await wallet.sendTransaction(params); // 发生错误时
 ```
 
@@ -878,13 +930,11 @@ const params = [
   {
     flag: "FTLP_MERGE",           // 必填
     nft_contract_address: "",     // 必填，PoolNFT 合约地址
-    poolNFT_version: 2,           // 可选，强制为 2
-    lockTime: 0,                  // 可选，手动设置解锁参数到最大可解锁区块高度。如果启用了锁定但没有此参数，解锁参数将自动设置为（当前区块高度 - 2）
     domain: "",                   // 可选
   },
 ];
 
-const { txid } = await wallet.sendTransaction(params); // txid 为多个 Merge 交易的 txid，用逗号隔开
+const { txid } = await wallet.sendTransaction(params);
 // const { error } = await wallet.sendTransaction(params); // 发生错误时
 ```
 
@@ -912,7 +962,7 @@ const { txid } = await wallet.sendTransaction(params);
 
 ### STABLECOIN_MERGE
 
-合并稳定币 UTXO（要求所有 coinutxo 均已上链）。
+合并稳定币 UTXO。
 
 ```ts
 const params = [
@@ -923,7 +973,7 @@ const params = [
   },
 ];
 
-const { txid } = await wallet.sendTransaction(params); // txid 为多个 Merge 交易的 txid，用逗号隔开
+const { txid } = await wallet.sendTransaction(params);
 // const { error } = await wallet.sendTransaction(params); // 发生错误时
 ```
 
@@ -933,7 +983,7 @@ const { txid } = await wallet.sendTransaction(params); // txid 为多个 Merge �
 
 此外，当 `signMessage` 请求需要依赖 `signAssociatedTransaction` 的结果时，可以通过 `dependsOn` 字段将两者关联，详见下方[关联请求](#关联请求)章节。
 
-**限制：** 单次批量请求最多支持 5 个请求。
+**限制：** 单次批量请求最多支持 5 个请求。Merge 请求不支持批量提交，请直接调用 `sendTransaction`。
 
 ### 支持的方法
 

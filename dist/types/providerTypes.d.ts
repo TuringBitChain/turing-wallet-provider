@@ -47,8 +47,14 @@ export type TransactionFlag =
   | "STABLECOIN_MERGE";
 
 
-export type SendTransaction = {
-  flag: TransactionFlag;
+type MergeTransactionFlag =
+  | "FT_MERGE"
+  | "STABLECOIN_MERGE"
+  | "POOLNFT_MERGE"
+  | "FTLP_MERGE";
+
+type NonMergeSendTransaction = {
+  flag: Exclude<TransactionFlag, MergeTransactionFlag>;
   satoshis?: number | string;
   address?: string;
   collection_data?: string;
@@ -73,6 +79,37 @@ export type SendTransaction = {
   lockTime?: number | string;
   broadcastEnabled?: boolean;
 };
+
+type FTMergeSendTransaction = {
+  flag: "FT_MERGE";
+  ft_contract_address: string;
+  domain?: string;
+};
+
+type StablecoinMergeSendTransaction = {
+  flag: "STABLECOIN_MERGE";
+  ft_contract_address: string;
+  domain?: string;
+};
+
+type PoolNFTMergeSendTransaction = {
+  flag: "POOLNFT_MERGE";
+  nft_contract_address: string;
+  domain?: string;
+};
+
+type FTLPMergeSendTransaction = {
+  flag: "FTLP_MERGE";
+  nft_contract_address: string;
+  domain?: string;
+};
+
+export type SendTransaction =
+  | NonMergeSendTransaction
+  | FTMergeSendTransaction
+  | StablecoinMergeSendTransaction
+  | PoolNFTMergeSendTransaction
+  | FTLPMergeSendTransaction;
 
 export type SendTransactionResponse = {
   txid?: string;
@@ -160,7 +197,7 @@ export type BatchRequestMethod =
 
 export type BatchRequest = {
   method: BatchRequestMethod;
-  params: SendTransaction | SignMessage | SignTransaction | SignAssociatedTransaction | Encrypt | Decrypt;
+  params: NonMergeSendTransaction | SignMessage | SignTransaction | SignAssociatedTransaction | Encrypt | Decrypt;
   dependsOn?: string;
 };
 
