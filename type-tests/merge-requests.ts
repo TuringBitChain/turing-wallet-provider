@@ -11,6 +11,20 @@ const nonMergeRequest: SendTransaction = {
   lockTime: "100",
 };
 
+const plan6PoolRequest: SendTransaction = {
+  flag: "POOLNFT_MINT",
+  ft_contract_address: "ft-contract",
+  lpPlan: 6,
+  serviceFeeRate: 130,
+};
+
+const invalidPlan7PoolRequest: SendTransaction = {
+  flag: "POOLNFT_MINT",
+  ft_contract_address: "ft-contract",
+  // @ts-expect-error PoolNFT only supports plans 1 through 6.
+  lpPlan: 7,
+};
+
 const ftMergeRequest: SendTransaction = {
   flag: "FT_MERGE",
   ft_contract_address: "ft-contract",
@@ -68,6 +82,8 @@ const batchMergeRequest: BatchRequest = { method: "sendTransaction", params: ftM
 
 void [
   nonMergeRequest,
+  plan6PoolRequest,
+  invalidPlan7PoolRequest,
   ftMergeRequest,
   stablecoinMergeRequest,
   poolNftMergeRequest,

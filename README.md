@@ -561,7 +561,7 @@ interface NonMergeRequestParam {
   poolNFT_version?: 1 | 2;                // 强制为 2，若提供为别的值转为 2
   serviceFeeRate?: number;
   serverProvider_tag?: string;
-  lpPlan?: 1 | 2 | 3 | 4 | 5;               // 默认 1
+  lpPlan?: 1 | 2 | 3 | 4 | 5 | 6;           // 创建池默认 1；Swap 可省略并由钱包从链上识别
   domain?: string;
   isLockTime?: boolean;
   lockTime?: number | string;              // 锁仓至指定区块高度（POOLNFT 相关），大数请使用 string
@@ -666,6 +666,8 @@ const { txid } = await wallet.sendTransaction(params);
 
 将 NFT 转移到另一个地址。
 
+钱包会根据链上 NFT 输出自动识别 v0、v1 或 v2 并选择对应的转移方法。DApp 不需要也不应传 NFT 版本参数。
+
 ```ts
 const params = [
   {
@@ -704,6 +706,8 @@ const { txid } = await wallet.sendTransaction(params);
 ### FT_TRANSFER
 
 转移同质化代币。
+
+钱包会根据链上父输出自动识别 FT v1–v4 并选择对应的转移方法。DApp 不需要传 FT 版本参数。
 
 ```ts
 const params = [
@@ -751,12 +755,12 @@ const params = [
     ft_contract_address: "",      // 必填，FT 合约地址
     serverProvider_tag: "",       // 必填，服务提供商标签
     poolNFT_version: 2,           // 可选，强制为 2
-    serviceFeeRate: 25,           // 可选，正整数，默认 25
+    serviceFeeRate: 130,          // 可选；必须与 lpPlan 对应，Plan 6 为 130（1.30%）
     with_lock: false,             // 可选，默认 false；为 true 时创建带哈希锁的池子
     pubKeyLock: ["pubkey1", "pubkey2"], // with_lock 为 true 时必填
     lpCostAddress: "",            // with_lock 为 true 时必填，扣除流动性添加成本的地址
     lpCostAmount: 0,              // with_lock 为 true 时必填，扣除流动性添加成本的 TBC 数量
-    lpPlan: 1,                    // 可选，1-5，默认 1
+    lpPlan: 6,                    // 可选，1-6，默认 1
     isLockTime: false,            // 可选，默认 false
     broadcastEnabled: true,       // 可选，默认 true
     domain: "",                   // 可选
@@ -767,6 +771,8 @@ const { txid } = await wallet.sendTransaction(params);
 // const { txraw } = await wallet.sendTransaction(params); // broadcastEnabled 为 false 时，返回的 txraw 有两个，用逗号隔开，需批量广播，保证前面的 txraw 先广播
 // const { error } = await wallet.sendTransaction(params); // 发生错误时
 ```
+
+各方案的规范服务费率（基点）为：Plan 1 = 35、Plan 2 = 35、Plan 3 = 135、Plan 4 = 335、Plan 5 = 535、Plan 6 = 130。创建池时若省略 `serviceFeeRate`，钱包会根据 `lpPlan` 自动填入；显式传入时必须与方案一致。
 
 ### POOLNFT_INIT
 
@@ -870,7 +876,7 @@ const params = [
     address: "",                   // 必填，接收地址
     tbc_amount: 0,                 // 必填，用于交换的 TBC 数量
     poolNFT_version: 2,            // 可选，强制为 2
-    lpPlan: 1,                     // 可选，1-5，默认 1
+    lpPlan: 6,                     // 可选；Plan 6 池可传 6，省略时钱包从链上池状态识别
     broadcastEnabled: true,        // 可选，默认 true
     domain: "",                    // 可选
   },
@@ -893,7 +899,7 @@ const params = [
     address: "",                  // 必填，接收地址
     ft_amount: 0,                 // 必填，用于交换的 FT 数量
     poolNFT_version: 2,           // 可选，强制为 2
-    lpPlan: 1,                    // 可选，1-5，默认 1
+    lpPlan: 6,                    // 可选；Plan 6 池可传 6，省略时钱包从链上池状态识别
     broadcastEnabled: true,       // 可选，默认 true
     domain: "",                   // 可选
   },
